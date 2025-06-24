@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <div><strong>My Flask App</strong></div>
+        <div>
+            {% if session.get('user') %}
+                <span>Hello, {{ session['user'] }}!</span>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Welcome to Our Website</h1>
+        <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Hero image" onerror="this.style.display='none'">
+    </section>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Welcome Message -->
+    <div class="welcome">
+        {% if session.get('user') %}
+            <p>Glad to see you back, {{ session['user'] }}!</p>
+        {% else %}
+            <p>Please log in or register to get started.</p>
+        {% endif %}
+    </div>
+
+    <!-- Gallery Section -->
+    <section class="gallery">
+        {% for i in range(1, 7) %}
+            <img src="{{ url_for('static', filename='images/image' ~ i ~ '.jpg') }}" alt="Gallery image {{ i }}" onerror="this.style.display='none'">
+        {% endfor %}
+    </section>
+
+</body>
+</html>
