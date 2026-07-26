@@ -2,31 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Flask App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}My Flask App{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav>
-        <a href="{{ url_for('index') }}">Home</a>
-        {% if session.get('user') %}
-            <span>Welcome, {{ session['user'] }}!</span>
-            <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('register') }}">Register</a>
-        {% endif %}
-    </nav>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header">
+        <nav class="navbar" aria-label="Main">
+            <a class="brand" href="{{ url_for('index') }}">My Flask App</a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" onclick="document.getElementById('nav-links').classList.toggle('is-open'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') !== 'true');">
+                <span class="sr-only">Toggle menu</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+
+            <div class="nav-links" id="nav-links">
+                {% if session.get('user') %}
+                    <span class="nav-greeting">Hi, {{ session['user'] }}</span>
+                    <a class="btn btn-ghost" href="{{ url_for('logout') }}">Log out</a>
+                {% else %}
+                    <a class="btn btn-ghost" href="{{ url_for('login') }}">Log in</a>
+                    <a class="btn btn-primary" href="{{ url_for('register') }}">Get started</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="flashes">
+        <div class="flashes" role="alert" aria-live="polite">
           {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
+            <div class="flash flash-{{ category }}">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
 
-    {% block content %}{% endblock %}
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 My Flask App. All rights reserved.</p>
+    </footer>
 </body>
 </html>
