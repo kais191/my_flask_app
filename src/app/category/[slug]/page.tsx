@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
+import { Reveal } from "@/components/reveal";
 import { getProductsByCategory } from "@/lib/data/products";
 import type { CategorySlug } from "@/lib/types";
 
@@ -32,11 +33,11 @@ export default async function CategoryPage({
           Filter
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
+      <Reveal variant="pop" className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
         {items.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
-      </div>
+      </Reveal>
       {items.length === 0 && (
         <p className="py-16 text-center text-sm text-ink-soft">
           Nothing here yet — check back soon.

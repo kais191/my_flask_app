@@ -20,7 +20,7 @@ export function ProductRail({
           See all
         </Link>
       </div>
-      <Reveal className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+      <Reveal variant="pop" className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}

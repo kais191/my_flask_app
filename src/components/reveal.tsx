@@ -8,20 +8,26 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Fades + slides its direct children up into place as the section scrolls
- * into view. Wrap a row of cards/tiles in this to get a staggered reveal
- * for free — each child animates ~80ms after the last.
+ * Animates its direct children into place as the section scrolls into view.
+ * Wrap a row of cards/tiles in this to get a staggered reveal for free —
+ * each child animates ~80ms after the last.
+ *
+ * variant "fade" — gentle fade + slide up, for banners/text blocks.
+ * variant "pop"  — scale up from small with a bouncy overshoot, for grids
+ *                  of product tiles/images (same card shape, punchier arrival).
  */
 export function Reveal({
   children,
   className,
   stagger = 0.08,
   as: Tag = "div",
+  variant = "fade",
 }: {
   children: React.ReactNode;
   className?: string;
   stagger?: number;
   as?: "div" | "section";
+  variant?: "fade" | "pop";
 }) {
   const containerRef = useRef<HTMLElement>(null);
 
@@ -32,12 +38,14 @@ export function Reveal({
       ).matches;
       if (prefersReducedMotion || !containerRef.current) return;
 
+      const props =
+        variant === "pop"
+          ? { opacity: 0, scale: 0.75, duration: 0.55, ease: "back.out(1.7)" }
+          : { opacity: 0, y: 24, duration: 0.5, ease: "power2.out" };
+
       gsap.from(containerRef.current.children, {
-        opacity: 0,
-        y: 24,
-        duration: 0.5,
+        ...props,
         stagger,
-        ease: "power2.out",
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 85%",
@@ -45,7 +53,7 @@ export function Reveal({
         },
       });
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [variant] }
   );
 
   return (

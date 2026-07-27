@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/product-card";
+import { Reveal } from "@/components/reveal";
 import { SearchIcon } from "@/components/icons";
 import { getAllProducts } from "@/lib/data/products";
 
@@ -18,11 +19,11 @@ export default async function SearchPage() {
           className="w-full bg-transparent text-sm outline-none placeholder:text-ink-soft"
         />
       </div>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
+      <Reveal variant="pop" className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
-      </div>
+      </Reveal>
     </div>
   );
 }

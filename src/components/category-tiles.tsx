@@ -11,7 +11,7 @@ const CATEGORIES: { slug: CategorySlug; label: string; art: ArtTone }[] = [
 
 export function CategoryTiles() {
   return (
-    <Reveal className="grid grid-cols-3 gap-2.5 px-4 sm:gap-4 sm:px-6 lg:px-8">
+    <Reveal variant="pop" className="grid grid-cols-3 gap-2.5 px-4 sm:gap-4 sm:px-6 lg:px-8">
       {CATEGORIES.map((cat) => (
         <Link
           key={cat.slug}
