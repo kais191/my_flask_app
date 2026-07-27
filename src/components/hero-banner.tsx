@@ -50,7 +50,7 @@ export function HeroBanner() {
   const slide = SLIDES[active];
 
   return (
-    <div className="relative mx-4 mt-4 h-[300px] overflow-hidden rounded-[22px] sm:mx-6 sm:h-[380px] lg:mx-8 lg:h-[440px]">
+    <div className="relative mx-4 mt-4 mb-6 h-[300px] overflow-hidden rounded-[22px] sm:mx-6 sm:mb-8 sm:h-[380px] lg:mx-8 lg:h-[440px]">
       <ProductArt tone={slide.art} className="absolute inset-0" />
       <div className="relative z-10 flex h-full flex-col justify-end p-6 sm:p-10">
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/85">
