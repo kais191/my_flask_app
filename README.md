@@ -42,14 +42,17 @@ inventory, profit, and order tracking.
   `schema.sql`. **If you already ran schema.sql before this update**, run
   just that one line again in the SQL Editor; everything else in the file is
   safe to skip since it's already applied.
-- **Phase 4 (in progress)** — real product photos now display wherever a
-  product has one (`src/components/product-photo.tsx`): product cards, the
-  product page, and the cart all show the real photo on a neutral backdrop
-  instead of the gradient placeholder, and the admin product form has a
-  "Photo URL" field to set one. Local test photos live in
+- **Phase 4 (in progress)** — real product photos display wherever a product
+  has one (`src/components/product-photo.tsx`): product cards, the product
+  page, and the cart all show the real photo on a neutral backdrop instead
+  of the gradient placeholder, and the admin product form has a "Photo URL"
+  field to set one. The catalog now has **26 products** — the original 6
+  plus 20 built from a real photo batch (7 Michael Kors bags, 8 skincare
+  items across Medicube/SkinCeuticals/Laneige/Anua/Beauty of Joseon/The Skin
+  Diary, 6 Charlotte Tilbury makeup sets). Local test photos live in
   `public/images/products/` for now — swapping to Cloudinary (for proper
-  hosting/CDN/resizing at scale) is the next step once there are enough real
-  photos to justify it.
+  hosting/CDN/resizing at scale) is the next step once there's a bigger
+  photo library to justify it.
 
 ## Stack
 
