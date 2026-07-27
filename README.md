@@ -21,10 +21,14 @@ inventory, profit, and order tracking.
   payment link for the balance once the piece has arrived. Needs both
   Supabase *and* Stripe connected (steps below) — without them the Reserve
   button says so instead of pretending to work.
-- **Phase 3b (next)** — regular product checkout (Makeup/Skincare/Handbags
-  cart → Stripe). This needs real cart state first (today's "Add to bag" and
-  `/cart` are still Phase 1 placeholders) — scoped separately so the
-  pre-order flow above didn't have to wait on it.
+- **Phase 3b (done)** — regular product checkout: "Add to bag" on every
+  listing/product page adds to a real cart (persisted in localStorage, with
+  a live count badge in the header and bottom nav), `/cart` lets you adjust
+  quantities and remove items, and Checkout creates a Stripe Checkout
+  session priced from the server's product catalog (never the client) for
+  the whole bag at once. The same webhook that handles pre-order deposits
+  now also creates the `orders` + `order_items` rows on success. Needs
+  Supabase + Stripe connected, same as the Reserve flow.
 - **Phase 4 (next)** — real product photography via Cloudinary, replacing the
   gradient placeholders (`src/components/product-art.tsx`) used throughout.
 - **Also open** — live (push, not page-refresh) new-order and low-stock
@@ -168,18 +172,24 @@ src/
     page.tsx             homepage
     category/[slug]/     category listing (makeup / skincare / handbags)
     product/[slug]/      product detail
-    cart/ wishlist/ profile/ search/    storefront account pages
+    cart/                 real cart, reads from CartProvider
+    wishlist/ profile/ search/    storefront account pages
     reserve/             luxury pre-order form -> Stripe deposit checkout
-    reserve/success/      post-checkout confirmation
+    reserve/success/      post-deposit confirmation
+    order/success/         post-checkout confirmation (clears the cart)
     admin/               dashboard, inventory, orders, preorders, login
-    api/webhooks/stripe/  marks a preorder's deposit/balance as paid
+    api/checkout/          builds a Stripe Checkout session priced from the
+                           server-side catalog, for whatever's in the cart
+    api/webhooks/stripe/  on success: creates orders/order_items, or marks a
+                           preorder's deposit/balance paid, depending on kind
     globals.css          design tokens (colors, fonts) + Tailwind import
-    layout.tsx           root layout: fonts, header, bottom nav
+    layout.tsx           root layout: fonts, header, bottom nav, CartProvider
   components/            shared UI (header, bottom nav, product card, icons…)
   lib/
-    types.ts              shape of Product / Order / Preorder / etc.
+    types.ts              shape of Product / Order / Preorder / CartItem / etc.
     mock-data.ts           stand-in catalog + orders + preorders (the Phase 1 fallback)
     product-utils.ts       pure helpers (bestsellers, low stock, profit-by-category)
+    cart/                  CartProvider — localStorage-backed, useSyncExternalStore
     data/                  data layer pages actually call — reads Supabase when
                             configured, falls back to mock-data otherwise
     supabase/               browser/server/service-role Supabase clients + config check

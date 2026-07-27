@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { ProductArt } from "@/components/product-art";
 import { ProductRail } from "@/components/product-rail";
-import { StarIcon, BagIcon, HeartIcon } from "@/components/icons";
+import { ProductBuyBox } from "@/components/product-buy-box";
+import { StarIcon } from "@/components/icons";
 import { getAllProducts, getProductBySlug } from "@/lib/data/products";
 
 export async function generateStaticParams() {
@@ -50,48 +51,7 @@ export default async function ProductPage({
           </div>
           <p className="mb-6 text-xl font-bold">${product.price}</p>
 
-          {product.variants && (
-            <div className="mb-6">
-              <p className="mb-2 text-sm font-semibold">
-                {isHandbag ? "Colour" : "Shade"}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {product.variants.map((v, i) => (
-                  <button
-                    key={v}
-                    className={`rounded-full border px-4 py-2 text-xs font-semibold ${
-                      i === 0 ? "border-ink bg-ink text-cream" : "border-line text-ink hover:border-rose"
-                    }`}
-                  >
-                    {v}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <p
-            className={`mb-6 text-xs font-semibold ${
-              product.stockQuantity <= product.lowStockThreshold ? "text-rose-dark" : "text-ink-soft"
-            }`}
-          >
-            {product.stockQuantity <= product.lowStockThreshold
-              ? `Only ${product.stockQuantity} left in stock`
-              : "In stock, ready to ship"}
-          </p>
-
-          <div className="flex gap-3">
-            <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-rose py-3.5 text-sm font-bold text-white transition-transform hover:scale-[1.02]">
-              <BagIcon className="h-4 w-4" strokeWidth={2} />
-              Add to bag
-            </button>
-            <button
-              aria-label="Add to wishlist"
-              className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-line hover:border-rose"
-            >
-              <HeartIcon className="h-4.5 w-4.5" />
-            </button>
-          </div>
+          <ProductBuyBox product={product} isHandbag={isHandbag} />
         </div>
       </div>
 

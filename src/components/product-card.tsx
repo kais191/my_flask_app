@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { BagIcon } from "./icons";
 import { ProductArt } from "./product-art";
+import { QuickAddButton } from "./quick-add-button";
 import type { Product } from "@/lib/types";
 
 export function ProductCard({ product }: { product: Product }) {
@@ -21,12 +21,7 @@ export function ProductCard({ product }: { product: Product }) {
               Low stock
             </span>
           )}
-          <button
-            aria-label={`Add ${product.name} to bag`}
-            className="absolute bottom-2 right-2 z-10 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-rose transition-transform hover:scale-110"
-          >
-            <BagIcon className="h-3.5 w-3.5 text-white" strokeWidth={2} />
-          </button>
+          <QuickAddButton product={product} />
         </div>
         <p className="mb-0.5 text-[13px] font-semibold text-ink">{product.name}</p>
         <p className="mb-1 text-[11.5px] text-ink-soft">

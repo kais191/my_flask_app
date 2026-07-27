@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BagIcon, HeartIcon, HomeIcon, SearchIcon, UserIcon } from "./icons";
+import { useCart } from "@/lib/cart/context";
 
 const ITEMS = [
   { href: "/", label: "Home", icon: HomeIcon },
@@ -14,6 +15,7 @@ const ITEMS = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { count } = useCart();
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -28,16 +30,23 @@ export function BottomNav() {
           <Link
             key={href}
             href={href}
-            className="flex min-w-11 flex-col items-center gap-1 py-1"
+            className="relative flex min-w-11 flex-col items-center gap-1 py-1"
           >
-            <Icon
-              className="h-[21px] w-[21px]"
-              style={{
-                stroke: active ? "var(--color-rose)" : "var(--color-ink-soft)",
-                fill: active ? "var(--color-rose)" : "none",
-                fillOpacity: active ? 0.12 : 1,
-              }}
-            />
+            <span className="relative">
+              <Icon
+                className="h-[21px] w-[21px]"
+                style={{
+                  stroke: active ? "var(--color-rose)" : "var(--color-ink-soft)",
+                  fill: active ? "var(--color-rose)" : "none",
+                  fillOpacity: active ? 0.12 : 1,
+                }}
+              />
+              {href === "/cart" && count > 0 && (
+                <span className="absolute -right-1.5 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose px-1 text-[8px] font-bold text-white">
+                  {count}
+                </span>
+              )}
+            </span>
             <span
               className="text-[10px] font-semibold"
               style={{ color: active ? "var(--color-rose)" : "var(--color-ink-soft)" }}

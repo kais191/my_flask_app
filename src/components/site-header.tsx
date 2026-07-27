@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { BagIcon, SearchIcon } from "./icons";
+import { useCart } from "@/lib/cart/context";
 
 const NAV_LINKS = [
   { href: "/category/makeup", label: "Makeup" },
@@ -9,6 +12,8 @@ const NAV_LINKS = [
 ];
 
 export function SiteHeader() {
+  const { count } = useCart();
+
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 lg:px-8">
@@ -38,10 +43,15 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/cart"
-            aria-label="Cart"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-cream-deep"
+            aria-label={`Cart${count ? `, ${count} items` : ""}`}
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-cream-deep"
           >
             <BagIcon className="h-[19px] w-[19px]" />
+            {count > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose px-1 text-[9px] font-bold text-white">
+                {count}
+              </span>
+            )}
           </Link>
         </div>
       </div>

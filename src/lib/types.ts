@@ -56,3 +56,12 @@ export interface Preorder {
   status: PreorderStatus;
   createdAt: string;
 }
+
+export interface CartItem {
+  slug: string;
+  name: string;
+  price: number;
+  art: ArtTone;
+  variant?: string;
+  quantity: number;
+}
