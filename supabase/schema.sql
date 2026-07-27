@@ -213,3 +213,8 @@ begin
     alter publication supabase_realtime add table products;
   end if;
 end $$;
+
+-- Ship the full previous row on UPDATE events (not just the primary key), so
+-- the admin panel can tell "stock just crossed the low-stock threshold" from
+-- "stock changed but was already low" instead of alerting on every edit.
+alter table products replica identity full;

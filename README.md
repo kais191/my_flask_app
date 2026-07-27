@@ -29,12 +29,22 @@ inventory, profit, and order tracking.
   the whole bag at once. The same webhook that handles pre-order deposits
   now also creates the `orders` + `order_items` rows on success. Needs
   Supabase + Stripe connected, same as the Reserve flow.
+- **Phase 5 (done)** — the admin panel got two upgrades:
+  - **Live notifications.** A new order or a product crossing its low-stock
+    threshold now pops a toast in `/admin/*` immediately (Supabase Realtime),
+    not just on next page load.
+  - **Product CRUD.** "Add product" and each row's "Edit" link on
+    `/admin/inventory` are real forms now (create/update/delete), instead of
+    needing the Supabase dashboard for catalog changes.
+
+  Both need Supabase connected — Realtime also needs the one-line
+  `alter table products replica identity full;` from the bottom of
+  `schema.sql`. **If you already ran schema.sql before this update**, run
+  just that one line again in the SQL Editor; everything else in the file is
+  safe to skip since it's already applied.
 - **Phase 4 (next)** — real product photography via Cloudinary, replacing the
   gradient placeholders (`src/components/product-art.tsx`) used throughout.
-- **Also open** — live (push, not page-refresh) new-order and low-stock
-  notifications in the admin panel. The database side is ready (`orders` and
-  `products` are already added to the Supabase realtime publication in
-  `schema.sql`); it just needs a client-side subscription.
+  Waiting on your actual product photos.
 
 ## Stack
 
@@ -177,7 +187,8 @@ src/
     reserve/             luxury pre-order form -> Stripe deposit checkout
     reserve/success/      post-deposit confirmation
     order/success/         post-checkout confirmation (clears the cart)
-    admin/               dashboard, inventory, orders, preorders, login
+    admin/               dashboard, inventory (+ new/[id]/edit forms),
+                         orders, preorders, login
     api/checkout/          builds a Stripe Checkout session priced from the
                            server-side catalog, for whatever's in the cart
     api/webhooks/stripe/  on success: creates orders/order_items, or marks a
@@ -185,10 +196,13 @@ src/
     globals.css          design tokens (colors, fonts) + Tailwind import
     layout.tsx           root layout: fonts, header, bottom nav, CartProvider
   components/            shared UI (header, bottom nav, product card, icons…)
+    admin/                  admin-only UI: realtime toast notifications,
+                            shared product-form fields
   lib/
     types.ts              shape of Product / Order / Preorder / CartItem / etc.
     mock-data.ts           stand-in catalog + orders + preorders (the Phase 1 fallback)
     product-utils.ts       pure helpers (bestsellers, low stock, profit-by-category)
+    slug.ts                 slugify() for the product form's auto-generated slug
     cart/                  CartProvider — localStorage-backed, useSyncExternalStore
     data/                  data layer pages actually call — reads Supabase when
                             configured, falls back to mock-data otherwise

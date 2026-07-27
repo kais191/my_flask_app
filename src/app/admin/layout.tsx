@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { AdminRealtimeNotifications } from "@/components/admin/realtime-notifications";
 
 const NAV = [
   { href: "/admin", label: "Dashboard" },
@@ -18,10 +19,11 @@ async function signOut() {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const showSignOut = isSupabaseConfigured();
+  const configured = isSupabaseConfigured();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      {configured && <AdminRealtimeNotifications />}
       <div className="mb-8 flex items-center justify-between">
         <div>
           <p className="font-display text-lg italic text-ink">Beauty House</p>
@@ -39,7 +41,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </Link>
             ))}
           </nav>
-          {showSignOut && (
+          {configured && (
             <form action={signOut}>
               <button className="text-xs font-semibold text-ink-soft hover:text-ink">
                 Sign out
