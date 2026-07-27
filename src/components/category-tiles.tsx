@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductArt } from "./product-art";
+import { Reveal } from "./reveal";
 import type { ArtTone, CategorySlug } from "@/lib/types";
 
 const CATEGORIES: { slug: CategorySlug; label: string; art: ArtTone }[] = [
@@ -10,7 +11,7 @@ const CATEGORIES: { slug: CategorySlug; label: string; art: ArtTone }[] = [
 
 export function CategoryTiles() {
   return (
-    <div className="grid grid-cols-3 gap-2.5 px-4 sm:gap-4 sm:px-6 lg:px-8">
+    <Reveal className="grid grid-cols-3 gap-2.5 px-4 sm:gap-4 sm:px-6 lg:px-8">
       {CATEGORIES.map((cat) => (
         <Link
           key={cat.slug}
@@ -26,6 +27,6 @@ export function CategoryTiles() {
           </span>
         </Link>
       ))}
-    </div>
+    </Reveal>
   );
 }

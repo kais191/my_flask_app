@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { Reveal } from "./reveal";
 
 export function PreorderBanner() {
   return (
-    <section className="px-4 py-2 sm:px-6 lg:px-8">
+    <Reveal as="section" className="px-4 py-2 sm:px-6 lg:px-8">
       <div
         className="relative overflow-hidden rounded-[20px] border border-[#e9c9bc] p-6 sm:p-9"
         style={{ background: "linear-gradient(150deg, #F6E4DC, #EABEB0)" }}
@@ -31,6 +32,6 @@ export function PreorderBanner() {
           <b className="block text-base text-ink sm:text-xl">50%</b>
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }

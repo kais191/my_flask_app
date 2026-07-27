@@ -42,7 +42,10 @@ export function BottomNav() {
                 }}
               />
               {href === "/cart" && count > 0 && (
-                <span className="absolute -right-1.5 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose px-1 text-[8px] font-bold text-white">
+                <span
+                  key={count}
+                  className="animate-badge-pop absolute -right-1.5 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose px-1 text-[8px] font-bold text-white"
+                >
                   {count}
                 </span>
               )}

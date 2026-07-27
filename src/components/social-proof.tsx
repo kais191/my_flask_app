@@ -1,5 +1,6 @@
 import { HeartIcon } from "./icons";
 import { ProductArt } from "./product-art";
+import { Reveal } from "./reveal";
 import type { ArtTone } from "@/lib/types";
 
 const POSTS: { art: ArtTone; likes: number }[] = [
@@ -15,7 +16,7 @@ export function SocialProof() {
   return (
     <section className="px-4 py-6 sm:px-6 lg:px-8">
       <h2 className="mb-3.5 text-[17px] font-semibold">Real results, #BeautyHouseGlow</h2>
-      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
+      <Reveal className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
         {POSTS.map((post, i) => (
           <div key={i} className="relative aspect-square overflow-hidden rounded-[10px]">
             <ProductArt tone={post.art} className="absolute inset-0" />
@@ -25,7 +26,7 @@ export function SocialProof() {
             </span>
           </div>
         ))}
-      </div>
+      </Reveal>
       <p className="mt-2.5 text-center text-[11.5px] text-ink-soft">
         Tag #BeautyHouseGlow to be featured
       </p>

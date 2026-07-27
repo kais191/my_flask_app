@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductCard } from "./product-card";
+import { Reveal } from "./reveal";
 import type { Product } from "@/lib/types";
 
 export function ProductRail({
@@ -19,11 +20,11 @@ export function ProductRail({
           See all
         </Link>
       </div>
-      <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+      <Reveal className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
-      </div>
+      </Reveal>
     </section>
   );
 }

@@ -53,6 +53,8 @@ inventory, profit, and order tracking.
   `src/app/globals.css` under `@theme`
 - **Supabase** (Postgres + Auth) — schema in `supabase/schema.sql`
 - **Stripe** — Checkout Sessions + Payment Links for the pre-order deposit flow
+- **GSAP** — scroll-triggered reveal animations (`src/components/reveal.tsx`);
+  respects `prefers-reduced-motion` throughout
 - Fonts: **Fraunces** (display/serif) + **Work Sans** (body), loaded via
   `next/font/google`
 

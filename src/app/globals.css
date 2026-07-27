@@ -36,6 +36,22 @@ h3,
   display: none;
 }
 
+/* small tactile "pop" for the cart badge whenever the count changes — retriggered by remounting with a new `key` */
+@keyframes badge-pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-badge-pop {
+  animation: badge-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
