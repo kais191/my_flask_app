@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ProductArt } from "./product-art";
+import { ProductPhoto } from "./product-photo";
 import { QuickAddButton } from "./quick-add-button";
 import type { Product } from "@/lib/types";
 
@@ -10,7 +10,12 @@ export function ProductCard({ product }: { product: Product }) {
     <div className="w-[142px] flex-none sm:w-[180px]">
       <Link href={`/product/${product.slug}`} className="group block">
         <div className="relative mb-2 h-[150px] overflow-hidden rounded-[14px] sm:h-[190px]">
-          <ProductArt tone={product.art} className="absolute inset-0" />
+          <ProductPhoto
+            imageUrl={product.imageUrl}
+            tone={product.art}
+            alt={product.name}
+            className="absolute inset-0"
+          />
           {product.bestseller && (
             <span className="absolute left-2 top-2 z-10 rounded-full bg-white/95 px-2 py-1 text-[9.5px] font-bold uppercase tracking-wide text-ink">
               Bestseller

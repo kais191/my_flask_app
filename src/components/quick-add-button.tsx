@@ -15,7 +15,13 @@ export function QuickAddButton({ product }: { product: Product }) {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        addItem({ slug: product.slug, name: product.name, price: product.price, art: product.art });
+        addItem({
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          art: product.art,
+          imageUrl: product.imageUrl,
+        });
         setAdded(true);
         setTimeout(() => setAdded(false), 1200);
       }}

@@ -12,6 +12,8 @@ export interface Product {
   compareAtPrice?: number;
   cost: number;
   art: ArtTone;
+  /** Real product photo — takes over from the `art` gradient placeholder wherever it's set. */
+  imageUrl?: string;
   stockQuantity: number;
   lowStockThreshold: number;
   bestseller?: boolean;
@@ -62,6 +64,7 @@ export interface CartItem {
   name: string;
   price: number;
   art: ArtTone;
+  imageUrl?: string;
   variant?: string;
   quantity: number;
 }

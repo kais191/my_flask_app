@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BagIcon, MinusIcon, PlusIcon, TrashIcon } from "@/components/icons";
-import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { useCart } from "@/lib/cart/context";
 
 export default function CartPage() {
@@ -63,7 +63,7 @@ export default function CartPage() {
         {items.map((item) => (
           <div key={`${item.slug}::${item.variant ?? ""}`} className="flex gap-4">
             <div className="relative h-20 w-20 flex-none overflow-hidden rounded-xl">
-              <ProductArt tone={item.art} className="absolute inset-0" />
+              <ProductPhoto imageUrl={item.imageUrl} tone={item.art} alt={item.name} className="absolute inset-0" />
             </div>
             <div className="flex flex-1 flex-col justify-between">
               <div className="flex items-start justify-between gap-3">

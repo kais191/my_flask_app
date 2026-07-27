@@ -32,6 +32,7 @@ interface ProductRow {
   concerns: string[] | null;
   is_preorder: boolean;
   deposit_percent: number | null;
+  image_url: string | null;
   categories: { slug: CategorySlug } | { slug: CategorySlug }[] | null;
 }
 
@@ -47,6 +48,7 @@ function fromRow(row: ProductRow): Product {
     compareAtPrice: row.compare_at_price ? Number(row.compare_at_price) : undefined,
     cost: Number(row.cost),
     art: artFor(row.id),
+    imageUrl: row.image_url ?? undefined,
     stockQuantity: row.stock_quantity,
     lowStockThreshold: row.low_stock_threshold,
     bestseller: row.bestseller,

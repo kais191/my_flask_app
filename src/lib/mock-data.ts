@@ -90,6 +90,7 @@ export const products: Product[] = [
     price: 168,
     cost: 74,
     art: "clay",
+    imageUrl: "/images/products/structured-tote.avif",
     stockQuantity: 12,
     lowStockThreshold: 6,
     rating: 4.8,

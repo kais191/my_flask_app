@@ -17,6 +17,7 @@ async function createProduct(formData: FormData) {
   const stockQuantity = Number(formData.get("stockQuantity"));
   const lowStockThreshold = Number(formData.get("lowStockThreshold"));
   const bestseller = formData.get("bestseller") === "on";
+  const imageUrl = String(formData.get("imageUrl") ?? "").trim();
   const variants = String(formData.get("variants") ?? "")
     .split(",")
     .map((v) => v.trim())
@@ -53,6 +54,7 @@ async function createProduct(formData: FormData) {
     stock_quantity: Number.isFinite(stockQuantity) ? stockQuantity : 0,
     low_stock_threshold: Number.isFinite(lowStockThreshold) ? lowStockThreshold : 10,
     bestseller,
+    image_url: imageUrl || null,
     variants: variants.length ? variants : null,
     concerns: concerns.length ? concerns : null,
   });

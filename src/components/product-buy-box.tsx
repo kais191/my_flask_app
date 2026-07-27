@@ -52,6 +52,7 @@ export function ProductBuyBox({ product, isHandbag }: { product: Product; isHand
               name: product.name,
               price: product.price,
               art: product.art,
+              imageUrl: product.imageUrl,
               variant,
             });
             setAdded(true);

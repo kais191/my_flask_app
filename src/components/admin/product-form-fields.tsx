@@ -141,6 +141,20 @@ export function ProductFormFields({ product }: { product?: Product }) {
       </div>
 
       <div>
+        <label className={labelClass} htmlFor="imageUrl">
+          Photo URL (optional)
+        </label>
+        <input
+          id="imageUrl"
+          name="imageUrl"
+          defaultValue={product?.imageUrl}
+          className={`${fieldClass} w-full`}
+          placeholder="/images/products/structured-tote.avif or a full https:// URL"
+        />
+        <p className="mt-1 text-xs text-ink-soft">Leave blank to use the placeholder gradient.</p>
+      </div>
+
+      <div>
         <label className={labelClass} htmlFor="variants">
           Shades / sizes (comma-separated, optional)
         </label>

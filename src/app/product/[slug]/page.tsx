@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { ProductRail } from "@/components/product-rail";
 import { ProductBuyBox } from "@/components/product-buy-box";
 import { StarIcon } from "@/components/icons";
@@ -27,7 +28,12 @@ export default async function ProductPage({
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="relative h-[380px] overflow-hidden rounded-2xl lg:h-[520px]">
-          <ProductArt tone={product.art} className="absolute inset-0" />
+          <ProductPhoto
+            imageUrl={product.imageUrl}
+            tone={product.art}
+            alt={product.name}
+            className="absolute inset-0"
+          />
         </div>
 
         <div>
