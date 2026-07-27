@@ -15,11 +15,22 @@ inventory, profit, and order tracking.
   sign-in, and every page above reads real data *once you connect a Supabase
   project* (steps below). Until you do, the site keeps running on the
   built-in mock catalog, so it's never broken in the meantime.
-- **Phase 3 (next)** — Stripe checkout, including the 50% deposit / 50%
-  on-arrival flow for luxury pre-orders, plus live low-stock and new-order
-  notifications.
+- **Phase 3 (done)** — the luxury pre-order deposit flow is real: the Reserve
+  page creates a Stripe Checkout session for 50% of the piece's price, a
+  webhook marks it paid, and `/admin/preorders` can generate a second
+  payment link for the balance once the piece has arrived. Needs both
+  Supabase *and* Stripe connected (steps below) — without them the Reserve
+  button says so instead of pretending to work.
+- **Phase 3b (next)** — regular product checkout (Makeup/Skincare/Handbags
+  cart → Stripe). This needs real cart state first (today's "Add to bag" and
+  `/cart` are still Phase 1 placeholders) — scoped separately so the
+  pre-order flow above didn't have to wait on it.
 - **Phase 4 (next)** — real product photography via Cloudinary, replacing the
   gradient placeholders (`src/components/product-art.tsx`) used throughout.
+- **Also open** — live (push, not page-refresh) new-order and low-stock
+  notifications in the admin panel. The database side is ready (`orders` and
+  `products` are already added to the Supabase realtime publication in
+  `schema.sql`); it just needs a client-side subscription.
 
 ## Stack
 
@@ -27,6 +38,7 @@ inventory, profit, and order tracking.
 - **Tailwind CSS v4** — theme tokens (colors, fonts) live in
   `src/app/globals.css` under `@theme`
 - **Supabase** (Postgres + Auth) — schema in `supabase/schema.sql`
+- **Stripe** — Checkout Sessions + Payment Links for the pre-order deposit flow
 - Fonts: **Fraunces** (display/serif) + **Work Sans** (body), loaded via
   `next/font/google`
 
@@ -104,6 +116,50 @@ when you're ready to store real products, orders, and customers.
    Now `/admin` requires sign-in, and that account can get in at
    `/admin/login`. Every other admin account you want, repeat this step for.
 
+## Connecting Stripe (turns on the pre-order deposit flow)
+
+Requires Supabase to already be connected (above) — reservations are stored
+there. Do this when you're ready to actually take deposits on the Reserve
+page.
+
+1. **Create a Stripe account** at [stripe.com](https://stripe.com) if you
+   don't have one. Stay in **test mode** while you're setting this up — the
+   toggle is in the dashboard sidebar.
+2. **Get your API keys.** Dashboard → **Developers → API keys**. Copy the
+   **Secret key** and **Publishable key**.
+3. **Add the secret key to `.env.local`:**
+   ```
+   STRIPE_SECRET_KEY=sk_test_...
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   ```
+4. **Forward webhooks to your local server** so deposit payments actually
+   mark the reservation as paid. Install the
+   [Stripe CLI](https://docs.stripe.com/stripe-cli), then:
+   ```bash
+   stripe listen --forward-to localhost:3000/api/webhooks/stripe
+   ```
+   It prints a webhook signing secret (`whsec_...`) — put that in
+   `.env.local` too:
+   ```
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   ```
+   Leave `stripe listen` running in its own terminal while you test.
+5. **Restart the dev server**, go to `/reserve`, and submit the form with a
+   [Stripe test card](https://docs.stripe.com/testing) (`4242 4242 4242
+   4242`, any future expiry, any CVC). You'll land on the Stripe-hosted
+   checkout for 50% of the price you entered, then get redirected to a
+   confirmation page. Check `/admin/preorders` — the reservation should show
+   as "Deposit paid."
+6. **Balance collection:** once a piece has arrived, go to
+   `/admin/preorders` and click **Generate balance link** on that
+   reservation. It creates a one-time Stripe Payment Link for the remaining
+   50% — copy it and send it to the customer (email/WhatsApp/etc. — no
+   transactional email is wired up yet, see Phase 3b/4 below).
+7. **Going live:** switch Stripe out of test mode, swap in the live secret
+   key, and add a **live** webhook endpoint under **Developers → Webhooks**
+   pointing at `https://yourdomain.com/api/webhooks/stripe` listening for
+   `checkout.session.completed` — use the signing secret it gives you.
+
 ## Project structure
 
 ```
@@ -113,18 +169,21 @@ src/
     category/[slug]/     category listing (makeup / skincare / handbags)
     product/[slug]/      product detail
     cart/ wishlist/ profile/ search/    storefront account pages
-    reserve/             luxury pre-order (deposit) flow
-    admin/               dashboard, inventory, orders, login
+    reserve/             luxury pre-order form -> Stripe deposit checkout
+    reserve/success/      post-checkout confirmation
+    admin/               dashboard, inventory, orders, preorders, login
+    api/webhooks/stripe/  marks a preorder's deposit/balance as paid
     globals.css          design tokens (colors, fonts) + Tailwind import
     layout.tsx           root layout: fonts, header, bottom nav
   components/            shared UI (header, bottom nav, product card, icons…)
   lib/
-    types.ts              shape of Product / Order / etc.
-    mock-data.ts           stand-in catalog + orders (the Phase 1 fallback)
+    types.ts              shape of Product / Order / Preorder / etc.
+    mock-data.ts           stand-in catalog + orders + preorders (the Phase 1 fallback)
     product-utils.ts       pure helpers (bestsellers, low stock, profit-by-category)
     data/                  data layer pages actually call — reads Supabase when
                             configured, falls back to mock-data otherwise
-    supabase/               browser/server Supabase clients + config check
+    supabase/               browser/server/service-role Supabase clients + config check
+    stripe/                 Stripe server client + config check
   proxy.ts                admin route protection (Next.js 16's replacement
                            for middleware.ts — see the file's top comment)
 supabase/
@@ -149,9 +208,11 @@ this kind of project):
 1. Push this branch, then import the repo at [vercel.com/new](https://vercel.com/new).
 2. Leave the build settings as detected (Next.js is auto-detected).
 3. Add the same environment variables from your `.env.local` in the Vercel
-   project's **Settings → Environment Variables** (if you've connected
-   Supabase — otherwise skip this and it deploys in mock-data mode).
+   project's **Settings → Environment Variables** (skip whichever you haven't
+   connected yet — the site degrades gracefully without them).
 4. Deploy. You'll get a live URL immediately.
-
-Phase 3 will add Stripe environment variables — this README will be updated
-with exactly what to set and where, when that lands.
+5. If you connected Stripe, add a **live** webhook endpoint (Stripe
+   dashboard → **Developers → Webhooks**) pointing at
+   `https://yourdomain.com/api/webhooks/stripe`, and put its signing secret
+   in `STRIPE_WEBHOOK_SECRET` on Vercel too — otherwise deposits will charge
+   correctly but never get marked "paid" in `/admin/preorders`.

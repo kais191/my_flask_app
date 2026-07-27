@@ -1,15 +1,20 @@
 import Link from "next/link";
 import { getProfitByCategory, getLowStock } from "@/lib/data/products";
 import { getRecentOrders } from "@/lib/data/orders";
+import { getPreorders } from "@/lib/data/preorders";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export default async function AdminDashboard() {
-  const [categories, alerts, orders] = await Promise.all([
+  const [categories, alerts, orders, preorders] = await Promise.all([
     getProfitByCategory(),
     getLowStock(),
     getRecentOrders(),
+    getPreorders(),
   ]);
   const newOrders = orders.filter((o) => o.status === "new");
+  const openReservations = preorders.filter(
+    (p) => p.status !== "balance_paid" && p.status !== "cancelled"
+  );
   const totalProfit = categories.reduce((sum, c) => sum + c.profitPotential, 0);
   const totalUnits = categories.reduce((sum, c) => sum + c.unitsInStock, 0);
 
@@ -17,11 +22,14 @@ export default async function AdminDashboard() {
     <div>
       <h1 className="mb-6 text-2xl">Dashboard</h1>
 
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <StatTile label="Profit potential" value={`$${totalProfit.toLocaleString()}`} />
         <StatTile label="Units in stock" value={totalUnits.toString()} />
         <StatTile label="Low stock alerts" value={alerts.length.toString()} tone={alerts.length ? "warn" : "default"} />
         <StatTile label="New orders" value={newOrders.length.toString()} tone={newOrders.length ? "accent" : "default"} />
+        <Link href="/admin/preorders">
+          <StatTile label="Open reservations" value={openReservations.length.toString()} />
+        </Link>
       </div>
 
       {alerts.length > 0 && (

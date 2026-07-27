@@ -1,4 +1,4 @@
-import type { Product, PreorderBrand, Order } from "./types";
+import type { Product, PreorderBrand, Order, Preorder } from "./types";
 
 /**
  * Stand-in catalog. Shape mirrors the future Supabase `products` table
@@ -140,6 +140,31 @@ export const orders: Order[] = [
     total: 48,
     placedAt: "2026-07-25T16:47:00Z",
     status: "fulfilled",
+  },
+];
+
+export const preorders: Preorder[] = [
+  {
+    id: "pre_1",
+    customerName: "Yasmin Odeh",
+    customerEmail: "yasmin.o@example.com",
+    brand: "Chanel",
+    styleReference: "Classic Flap, medium, caviar black/gold",
+    itemPrice: 8800,
+    depositAmount: 4400,
+    status: "deposit_paid",
+    createdAt: "2026-07-20T10:00:00Z",
+  },
+  {
+    id: "pre_2",
+    customerName: "Farah Nasser",
+    customerEmail: "farah.n@example.com",
+    brand: "Louis Vuitton",
+    styleReference: "Neverfull MM, Damier Ebene",
+    itemPrice: 1740,
+    depositAmount: 870,
+    status: "arrived",
+    createdAt: "2026-07-12T14:30:00Z",
   },
 ];
 

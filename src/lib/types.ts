@@ -37,3 +37,22 @@ export interface Order {
   placedAt: string;
   status: "new" | "fulfilled";
 }
+
+export type PreorderStatus =
+  | "pending_deposit"
+  | "deposit_paid"
+  | "arrived"
+  | "balance_paid"
+  | "cancelled";
+
+export interface Preorder {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  brand: string;
+  styleReference?: string;
+  itemPrice: number;
+  depositAmount: number;
+  status: PreorderStatus;
+  createdAt: string;
+}
