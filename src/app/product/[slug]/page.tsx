@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { ProductArt } from "@/components/product-art";
 import { ProductRail } from "@/components/product-rail";
 import { StarIcon, BagIcon, HeartIcon } from "@/components/icons";
-import { products } from "@/lib/mock-data";
+import { getAllProducts, getProductBySlug } from "@/lib/data/products";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await getAllProducts();
   return products.map((p) => ({ slug: p.slug }));
 }
 
@@ -14,10 +15,11 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const crossSell = products.filter((p) => p.id !== product.id).slice(0, 4);
+  const allProducts = await getAllProducts();
+  const crossSell = allProducts.filter((p) => p.id !== product.id).slice(0, 4);
   const isHandbag = product.category === "handbags";
 
   return (

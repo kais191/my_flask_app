@@ -1,6 +1,8 @@
-import { products } from "@/lib/mock-data";
+import { getAllProducts } from "@/lib/data/products";
 
-export default function AdminInventory() {
+export default async function AdminInventory() {
+  const products = await getAllProducts();
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">

@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { profitByCategory, lowStock, orders } from "@/lib/mock-data";
+import { getProfitByCategory, getLowStock } from "@/lib/data/products";
+import { getRecentOrders } from "@/lib/data/orders";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 
-export default function AdminDashboard() {
-  const categories = profitByCategory();
-  const alerts = lowStock();
+export default async function AdminDashboard() {
+  const [categories, alerts, orders] = await Promise.all([
+    getProfitByCategory(),
+    getLowStock(),
+    getRecentOrders(),
+  ]);
   const newOrders = orders.filter((o) => o.status === "new");
   const totalProfit = categories.reduce((sum, c) => sum + c.profitPotential, 0);
   const totalUnits = categories.reduce((sum, c) => sum + c.unitsInStock, 0);
@@ -89,9 +94,9 @@ export default function AdminDashboard() {
       </div>
 
       <p className="text-xs text-ink-soft">
-        Figures above are computed from mock catalog data. Once Supabase is
-        wired up, this page queries real orders and inventory, and new-order
-        notifications arrive live instead of on page load.
+        {isSupabaseConfigured()
+          ? "Figures above are live from Supabase."
+          : "Figures above are computed from mock catalog data — add Supabase credentials to .env.local to see real numbers here (see README)."}
       </p>
     </div>
   );

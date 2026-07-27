@@ -1,6 +1,8 @@
-import { orders } from "@/lib/mock-data";
+import { getRecentOrders } from "@/lib/data/orders";
 
-export default function AdminOrders() {
+export default async function AdminOrders() {
+  const orders = await getRecentOrders();
+
   return (
     <div>
       <h1 className="mb-6 text-2xl">Orders</h1>

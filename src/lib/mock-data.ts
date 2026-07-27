@@ -143,42 +143,6 @@ export const orders: Order[] = [
   },
 ];
 
-export function bestsellers(): Product[] {
-  return products.filter((p) => p.bestseller || p.rating >= 4.7).slice(0, 6);
-}
-
-export function lowStock(): Product[] {
-  return products.filter((p) => p.stockQuantity <= p.lowStockThreshold);
-}
-
-export interface CategoryProfit {
-  category: Product["category"];
-  label: string;
-  unitsInStock: number;
-  revenuePotential: number;
-  profitPotential: number;
-}
-
-const CATEGORY_LABELS: Record<Product["category"], string> = {
-  makeup: "Makeup",
-  skincare: "Skincare",
-  handbags: "Handbags",
-};
-
-/**
- * "Profit" here = (price - cost) x units currently in stock — a stand-in
- * for real margin reporting, which in Phase 2 sums actual `order_items`
- * against `products.cost` in Supabase rather than projecting from stock.
- */
-export function profitByCategory(): CategoryProfit[] {
-  return (Object.keys(CATEGORY_LABELS) as Product["category"][]).map((category) => {
-    const items = products.filter((p) => p.category === category);
-    const unitsInStock = items.reduce((sum, p) => sum + p.stockQuantity, 0);
-    const revenuePotential = items.reduce((sum, p) => sum + p.price * p.stockQuantity, 0);
-    const profitPotential = items.reduce(
-      (sum, p) => sum + (p.price - p.cost) * p.stockQuantity,
-      0
-    );
-    return { category, label: CATEGORY_LABELS[category], unitsInStock, revenuePotential, profitPotential };
-  });
-}
+// Computed helpers (bestsellers, lowStock, profitByCategory) live in
+// `src/lib/product-utils.ts` — they're pure functions over `Product[]` so
+// the same logic works whether the array came from here or from Supabase.

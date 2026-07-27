@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/mock-data";
+import { getProductsByCategory } from "@/lib/data/products";
 import type { CategorySlug } from "@/lib/types";
 
 const LABELS: Record<CategorySlug, string> = {
@@ -21,7 +21,7 @@ export default async function CategoryPage({
   const { slug } = await params;
   if (!(slug in LABELS)) notFound();
   const category = slug as CategorySlug;
-  const items = products.filter((p) => p.category === category);
+  const items = await getProductsByCategory(category);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">

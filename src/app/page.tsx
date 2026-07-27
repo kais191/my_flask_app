@@ -4,9 +4,11 @@ import { ShopByLook } from "@/components/shop-by-look";
 import { ProductRail } from "@/components/product-rail";
 import { PreorderBanner } from "@/components/preorder-banner";
 import { SocialProof } from "@/components/social-proof";
-import { bestsellers } from "@/lib/mock-data";
+import { getBestsellers } from "@/lib/data/products";
 
-export default function Home() {
+export default async function Home() {
+  const bestsellers = await getBestsellers();
+
   return (
     <div className="mx-auto max-w-6xl">
       <HeroBanner />
@@ -15,7 +17,7 @@ export default function Home() {
       <ProductRail
         title="Everyday Glam edit"
         seeAllHref="/search?look=everyday-glam"
-        products={bestsellers()}
+        products={bestsellers}
       />
       <PreorderBanner />
       <SocialProof />

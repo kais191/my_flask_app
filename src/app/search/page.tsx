@@ -1,11 +1,13 @@
 import { ProductCard } from "@/components/product-card";
 import { SearchIcon } from "@/components/icons";
-import { products } from "@/lib/mock-data";
+import { getAllProducts } from "@/lib/data/products";
 
-export default function SearchPage() {
-  // Client-side filtering over mock data for now; swaps for a real search
-  // index (Postgres full-text to start, see the pre-brief on Algolia/Meilisearch
-  // if the catalog grows past a few hundred SKUs) once Supabase is wired up.
+export default async function SearchPage() {
+  // Full catalog rendered client-side-filterable for now; swaps for a real
+  // search index (Postgres full-text to start, Algolia/Meilisearch if the
+  // catalog outgrows a few hundred SKUs) in a later pass.
+  const products = await getAllProducts();
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center gap-3 rounded-full border border-line bg-surface px-4 py-3">
