@@ -45,3 +45,31 @@ export function profitByCategory(products: Product[]): CategoryProfit[] {
     return { category, label: CATEGORY_LABELS[category], unitsInStock, revenuePotential, profitPotential };
   });
 }
+
+export interface CategoryAvailability {
+  category: Product["category"];
+  label: string;
+  availableCount: number;
+  percentOfAvailable: number;
+}
+
+/**
+ * Each category's share of currently-available (in-stock) products —
+ * real, computed straight from the catalog, not a mock figure. "Available"
+ * means stockQuantity > 0; out-of-stock items don't count toward any
+ * category's share.
+ */
+export function availabilityByCategory(products: Product[]): CategoryAvailability[] {
+  const available = products.filter((p) => p.stockQuantity > 0);
+  const total = available.length;
+
+  return (Object.keys(CATEGORY_LABELS) as Product["category"][]).map((category) => {
+    const availableCount = available.filter((p) => p.category === category).length;
+    return {
+      category,
+      label: CATEGORY_LABELS[category],
+      availableCount,
+      percentOfAvailable: total === 0 ? 0 : Math.round((availableCount / total) * 100),
+    };
+  });
+}

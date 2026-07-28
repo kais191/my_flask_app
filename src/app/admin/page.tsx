@@ -1,16 +1,23 @@
 import Link from "next/link";
-import { getProfitByCategory, getLowStock } from "@/lib/data/products";
+import { getProfitByCategory, getLowStock, getAllProducts } from "@/lib/data/products";
 import { getRecentOrders } from "@/lib/data/orders";
 import { getPreorders } from "@/lib/data/preorders";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { availabilityByCategory } from "@/lib/product-utils";
+import { salesByCategory, salesTrend } from "@/lib/mock-data";
+import { CategoryBarChart } from "@/components/admin/category-bar-chart";
+import { CategoryAvailabilityList } from "@/components/admin/category-availability-list";
+import { SalesTrendChart } from "@/components/admin/sales-trend-chart";
 
 export default async function AdminDashboard() {
-  const [categories, alerts, orders, preorders] = await Promise.all([
+  const [categories, alerts, orders, preorders, allProducts] = await Promise.all([
     getProfitByCategory(),
     getLowStock(),
     getRecentOrders(),
     getPreorders(),
+    getAllProducts(),
   ]);
+  const availability = availabilityByCategory(allProducts);
   const newOrders = orders.filter((o) => o.status === "new");
   const openReservations = preorders.filter(
     (p) => p.status !== "balance_paid" && p.status !== "cancelled"
@@ -47,6 +54,23 @@ export default async function AdminDashboard() {
           </ul>
         </div>
       )}
+
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl border border-line p-5">
+          <h2 className="mb-4 text-sm font-semibold">Sales by category</h2>
+          <CategoryBarChart data={salesByCategory} />
+        </div>
+
+        <div className="rounded-2xl border border-line p-5">
+          <h2 className="mb-4 text-sm font-semibold">Available products by category</h2>
+          <CategoryAvailabilityList data={availability} />
+        </div>
+      </div>
+
+      <div className="mb-8 rounded-2xl border border-line p-5">
+        <h2 className="mb-1 text-sm font-semibold">Total sales — last 12 weeks</h2>
+        <SalesTrendChart data={salesTrend} />
+      </div>
 
       <div className="mb-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-line">

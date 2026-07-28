@@ -491,6 +491,48 @@ export const preorders: Preorder[] = [
   },
 ];
 
-// Computed helpers (bestsellers, lowStock, profitByCategory) live in
-// `src/lib/product-utils.ts` — they're pure functions over `Product[]` so
-// the same logic works whether the array came from here or from Supabase.
+// Computed helpers (bestsellers, lowStock, profitByCategory, availabilityByCategory)
+// live in `src/lib/product-utils.ts` — they're pure functions over `Product[]`
+// so the same logic works whether the array came from here or from Supabase.
+
+export interface CategorySales {
+  category: Product["category"];
+  amount: number;
+}
+
+/**
+ * Illustrative — there isn't enough mock order history to sum real revenue
+ * by category yet. Once Supabase is live this becomes
+ * `select category, sum(unit_price * quantity) from order_items join
+ * products ... group by category` over a real date range.
+ */
+export const salesByCategory: CategorySales[] = [
+  { category: "handbags", amount: 3820 },
+  { category: "skincare", amount: 2760 },
+  { category: "makeup", amount: 1950 },
+];
+
+export interface WeeklySales {
+  weekLabel: string;
+  amount: number;
+}
+
+/**
+ * Illustrative 12-week trend (all categories combined) — becomes a real
+ * `date_trunc('week', placed_at)` aggregation over `orders` once there's
+ * enough live order history to chart.
+ */
+export const salesTrend: WeeklySales[] = [
+  { weekLabel: "May 4", amount: 1240 },
+  { weekLabel: "May 11", amount: 1380 },
+  { weekLabel: "May 18", amount: 1290 },
+  { weekLabel: "May 25", amount: 1510 },
+  { weekLabel: "Jun 1", amount: 1620 },
+  { weekLabel: "Jun 8", amount: 1580 },
+  { weekLabel: "Jun 15", amount: 1740 },
+  { weekLabel: "Jun 22", amount: 1810 },
+  { weekLabel: "Jun 29", amount: 1950 },
+  { weekLabel: "Jul 6", amount: 2080 },
+  { weekLabel: "Jul 13", amount: 2140 },
+  { weekLabel: "Jul 20", amount: 2360 },
+];
