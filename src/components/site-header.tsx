@@ -1,0 +1,88 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BagIcon, SearchIcon } from "./icons";
+import { useCart } from "@/lib/cart/context";
+
+const NAV_LINKS = [
+  { href: "/category/makeup", label: "Makeup" },
+  { href: "/category/skincare", label: "Skincare" },
+  { href: "/category/handbags", label: "Handbags" },
+  { href: "/reserve", label: "The Reserve" },
+];
+
+export function SiteHeader() {
+  const { count } = useCart();
+  const pathname = usePathname();
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 lg:px-8">
+        <Link href="/" className="font-display text-xl italic tracking-wide text-ink">
+          Beauty House
+        </Link>
+
+        <nav className="hidden items-center gap-8 lg:flex">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-cream-deep"
+          >
+            <SearchIcon className="h-[19px] w-[19px]" />
+          </Link>
+          <Link
+            href="/cart"
+            aria-label={`Cart${count ? `, ${count} items` : ""}`}
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-ink transition-colors hover:bg-cream-deep"
+          >
+            <BagIcon className="h-[19px] w-[19px]" />
+            {count > 0 && (
+              <span
+                key={count}
+                className="animate-badge-pop absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose px-1 text-[9px] font-bold text-white"
+              >
+                {count}
+              </span>
+            )}
+          </Link>
+        </div>
+      </div>
+
+      {/* category links, visible below the lg breakpoint where the row above is hidden */}
+      <nav
+        aria-label="Categories"
+        className="no-scrollbar flex gap-2 overflow-x-auto border-t border-line px-5 py-2.5 lg:hidden"
+      >
+        {NAV_LINKS.map((link) => {
+          const active = pathname.startsWith(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex-none rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold whitespace-nowrap transition-colors ${
+                active
+                  ? "border-ink bg-ink text-cream"
+                  : "border-line bg-surface text-ink-soft hover:border-rose hover:text-ink"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
+    </header>
+  );
+}

@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-work-sans);
+
+  --color-cream: #fbf1ec;
+  --color-cream-deep: #f6e4dc;
+  --color-sand: #eabeb0;
+  --color-rose: #c17a8b;
+  --color-rose-dark: #a85e6e;
+  --color-ink: #3e2723;
+  --color-ink-soft: #8a6f68;
+  --color-line: #f0dfd8;
+  --color-surface: #ffffff;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* hide scrollbar on horizontally-scrolling rails (chips, carousels) while keeping them scrollable */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* small tactile "pop" for the cart badge whenever the count changes — retriggered by remounting with a new `key` */
+@keyframes badge-pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-badge-pop {
+  animation: badge-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
