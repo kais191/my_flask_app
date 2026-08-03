@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BagIcon, SearchIcon } from "./icons";
 import { useCart } from "@/lib/cart/context";
 
@@ -13,6 +14,7 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   const { count } = useCart();
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-cream/95 backdrop-blur">
@@ -58,6 +60,29 @@ export function SiteHeader() {
           </Link>
         </div>
       </div>
+
+      {/* category links, visible below the lg breakpoint where the row above is hidden */}
+      <nav
+        aria-label="Categories"
+        className="no-scrollbar flex gap-2 overflow-x-auto border-t border-line px-5 py-2.5 lg:hidden"
+      >
+        {NAV_LINKS.map((link) => {
+          const active = pathname.startsWith(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex-none rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold whitespace-nowrap transition-colors ${
+                active
+                  ? "border-ink bg-ink text-cream"
+                  : "border-line bg-surface text-ink-soft hover:border-rose hover:text-ink"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
     </header>
   );
 }
