@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{% if term %}Search: {{ term }}{% else %}Search{% endif %} | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <h1>{% if term %}Results for “{{ term }}”{% else %}Search our flowers{% endif %}</h1>
+    <form action="{{ url_for('shop.search') }}" method="get" class="couponform" style="max-width:520px;margin-top:1rem" role="search">
+      <label class="sr-only" for="search-again">Search flowers</label>
+      <input id="search-again" type="search" name="q" value="{{ term }}" placeholder="Roses, peonies, hatbox…">
+      <button class="btn" type="submit">Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    {% if term and results %}
+      <p class="toolbar__count" style="margin-bottom:1.5rem">
+        {{ results | length }} arrangement{{ '' if results | length == 1 else 's' }} found
+      </p>
+      <div class="grid grid--4">
+        {% for product in results %}
+          {% include "partials/product_card.html" %}
+        {% endfor %}
+      </div>
+    {% elif term %}
+      <div class="empty">
+        <h2>Nothing matched “{{ term }}”</h2>
+        <p>Try a colour, a flower name, or browse the full range instead.</p>
+        <a class="btn" href="{{ url_for('shop.collections') }}">View all flowers</a>
+      </div>
+    {% else %}
+      <div class="empty">
+        <h2>What are you looking for?</h2>
+        <p>Search by flower, colour, style or occasion.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

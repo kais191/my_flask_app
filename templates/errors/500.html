@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Something went wrong | {{ brand.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container empty">
+    <h1>Something went wrong at our end</h1>
+    <p>
+      That's our fault, not yours. If you were placing an order, nothing has been
+      charged — please ring the studio on
+      <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>
+      and we'll take it over the phone.
+    </p>
+    <a class="btn" href="{{ url_for('main.index') }}">Back to the homepage</a>
+  </div>
+</section>
+{% endblock %}

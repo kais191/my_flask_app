@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Create an account | {{ brand.name }}{% endblock %}
+
+{% block content %}
+<section class="authpage">
+  <div>
+    <div class="formcard">
+      <h2>Create your account</h2>
+      <p class="formcard__intro">
+        Save your addresses, reorder in two clicks and keep an eye on deliveries.
+        You can always check out as a guest instead.
+      </p>
+
+      <form method="post" class="form" novalidate>
+        <div class="form__row">
+          <div class="field {% if errors.get('first_name') %}has-error{% endif %}">
+            <label for="first_name">First name</label>
+            <input id="first_name" name="first_name" type="text" value="{{ form.get('first_name', '') }}" required>
+            {% if errors.get('first_name') %}<span class="error">{{ errors['first_name'] }}</span>{% endif %}
+          </div>
+          <div class="field {% if errors.get('last_name') %}has-error{% endif %}">
+            <label for="last_name">Surname</label>
+            <input id="last_name" name="last_name" type="text" value="{{ form.get('last_name', '') }}" required>
+            {% if errors.get('last_name') %}<span class="error">{{ errors['last_name'] }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="field {% if errors.get('email') %}has-error{% endif %}">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" value="{{ form.get('email', '') }}" autocomplete="email" required>
+          {% if errors.get('email') %}<span class="error">{{ errors['email'] }}</span>{% endif %}
+        </div>
+        <div class="field">
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" type="tel" value="{{ form.get('phone', '') }}">
+        </div>
+        <div class="field {% if errors.get('password') %}has-error{% endif %}">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" required>
+          <span class="hint">At least 8 characters.</span>
+          {% if errors.get('password') %}<span class="error">{{ errors['password'] }}</span>{% endif %}
+        </div>
+        <div class="field {% if errors.get('confirm') %}has-error{% endif %}">
+          <label for="confirm">Confirm password</label>
+          <input id="confirm" name="confirm" type="password" autocomplete="new-password" required>
+          {% if errors.get('confirm') %}<span class="error">{{ errors['confirm'] }}</span>{% endif %}
+        </div>
+        <button class="btn btn--block" type="submit">Create account</button>
+      </form>
+    </div>
+    <p class="authpage__foot">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

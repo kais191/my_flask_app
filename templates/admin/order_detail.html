@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ order.reference }} | Studio dashboard{% endblock %}
+
+{% block admin %}
+<p><a href="{{ url_for('admin.orders') }}">← All orders</a></p>
+<h1>{{ order.reference }}</h1>
+
+<div class="panel" style="margin-top:1.5rem">
+  <h2 style="font-size:1.1rem">Update status</h2>
+  <form method="post" action="{{ url_for('admin.update_status', reference=order.reference) }}"
+        class="filterbar" style="margin:0">
+    <select name="status">
+      {% for value in statuses %}
+        <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
+          {{ value.replace('_', ' ') | title }}
+        </option>
+      {% endfor %}
+    </select>
+    <button class="btn btn--sm" type="submit">Save</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2 style="font-size:1.1rem">Customer</h2>
+  <p class="small">
+    {{ order.customer_name }}<br>
+    <a href="mailto:{{ order.customer_email }}">{{ order.customer_email }}</a><br>
+    {{ order.customer_phone or 'No phone given' }}
+  </p>
+  {% if order.user_id %}
+    <p class="small muted">Placed from a registered account.</p>
+  {% else %}
+    <p class="small muted">Guest checkout.</p>
+  {% endif %}
+</div>
+
+{% include "partials/order_summary.html" %}
+{% endblock %}

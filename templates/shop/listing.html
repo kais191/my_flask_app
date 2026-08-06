@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | {{ brand.name }}{% endblock %}
+{% block description %}{{ blurb | truncate(155) }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container">
+    <ol class="breadcrumbs">
+      <li><a href="{{ url_for('main.index') }}">Home</a></li>
+      <li><a href="{{ url_for('shop.collections') }}">Flowers</a></li>
+      <li>{{ title }}</li>
+    </ol>
+    <div class="pagehead__inner pagehead--split">
+      <div>
+        <h1>{{ title }}</h1>
+        {% if headline %}<p class="eyebrow" style="margin-top:.5rem">{{ headline }}</p>{% endif %}
+        <p>{{ blurb }}</p>
+      </div>
+      {% if hero_image %}
+        <div class="pagehead__art">
+          <img src="{{ url_for('static', filename=hero_image) }}" alt="" loading="lazy" width="600" height="300">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container shop">
+
+    <aside class="filters" aria-label="Filter products">
+      <div class="filters__group">
+        <h3>Collections</h3>
+        <ul>
+          <li>
+            <a href="{{ url_for('shop.collections') }}"
+               class="{% if not active_collection and not active_occasion %}is-active{% endif %}">All flowers</a>
+          </li>
+          {% for c in collections %}
+            <li>
+              <a href="{{ url_for('shop.collection', slug=c.slug) }}"
+                 class="{% if active_collection and active_collection.id == c.id %}is-active{% endif %}">{{ c.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="filters__group">
+        <h3>Occasions</h3>
+        <ul>
+          {% for o in occasions %}
+            <li>
+              <a href="{{ url_for('shop.occasion', slug=o.slug) }}"
+                 class="{% if active_occasion and active_occasion.id == o.id %}is-active{% endif %}">{{ o.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="filters__group">
+        <h3>Price</h3>
+        <ul>
+          <li>
+            <a href="{{ url_for(endpoint, sort=active_sort, **endpoint_args) }}"
+               class="{% if not active_price %}is-active{% endif %}">Any price</a>
+          </li>
+          {% for band in price_bands %}
+            <li>
+              <a href="{{ url_for(endpoint, price=band.code, sort=active_sort, **endpoint_args) }}"
+                 class="{% if active_price == band.code %}is-active{% endif %}">{{ band.label }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+
+    <div>
+      <div class="toolbar">
+        <p class="toolbar__count">
+          {{ pagination.total }} arrangement{{ '' if pagination.total == 1 else 's' }}
+          {%- if active_price %} in this price range{% endif %}
+        </p>
+        <form class="toolbar__sort" method="get" action="{{ url_for(endpoint, **endpoint_args) }}">
+          {% if active_price %}<input type="hidden" name="price" value="{{ active_price }}">{% endif %}
+          <label for="sort">Sort by</label>
+          <select id="sort" name="sort" data-sort>
+            {% for key, option in sort_options.items() %}
+              <option value="{{ key }}" {% if key == active_sort %}selected{% endif %}>{{ option[0] }}</option>
+            {% endfor %}
+          </select>
+          <noscript><button class="btn btn--sm" type="submit">Go</button></noscript>
+        </form>
+      </div>
+
+      {% if products %}
+        <div class="grid grid--3">
+          {% for product in products %}
+            {% include "partials/product_card.html" %}
+          {% endfor %}
+        </div>
+
+        {% if pagination.pages > 1 %}
+          <nav class="pagination" aria-label="Pagination">
+            {% if pagination.has_prev %}
+              <a href="{{ url_for(endpoint, page=pagination.prev_num, sort=active_sort, price=active_price, **endpoint_args) }}">Previous</a>
+            {% else %}
+              <span class="is-disabled">Previous</span>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+              {% if page_num %}
+                {% if page_num == pagination.page %}
+                  <span class="is-current" aria-current="page">{{ page_num }}</span>
+                {% else %}
+                  <a href="{{ url_for(endpoint, page=page_num, sort=active_sort, price=active_price, **endpoint_args) }}">{{ page_num }}</a>
+                {% endif %}
+              {% else %}
+                <span class="is-disabled">…</span>
+              {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+              <a href="{{ url_for(endpoint, page=pagination.next_num, sort=active_sort, price=active_price, **endpoint_args) }}">Next</a>
+            {% else %}
+              <span class="is-disabled">Next</span>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="empty">
+          <h2>Nothing matches that just yet</h2>
+          <p>Try widening the price range, or browse the complete range.</p>
+          <a class="btn" href="{{ url_for('shop.collections') }}">View all flowers</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

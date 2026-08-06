@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Flower Delivery {{ area.name }} | {{ brand.name }}{% endblock %}
+{% block description %}{{ 'Same-day' if area.same_day else 'Next-day' }} flower delivery in {{ area.name }}. Hand-tied bouquets made fresh in Dublin and delivered across {{ area.name }}.{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container">
+    <ol class="breadcrumbs">
+      <li><a href="{{ url_for('main.index') }}">Home</a></li>
+      <li><a href="{{ url_for('main.delivery') }}">Delivery</a></li>
+      <li>{{ area.name }}</li>
+    </ol>
+    <div class="pagehead__inner">
+      <p class="eyebrow">{{ 'Same-day delivery' if area.same_day else 'Next-day delivery' }}</p>
+      <h1>Flower delivery in {{ area.name }}</h1>
+      <p class="lead">{{ area.intro }}</p>
+      <a class="btn btn--lg" href="{{ url_for('shop.collections') }}" style="margin-top:1rem">Shop flowers</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="infogrid">
+      <div class="infocard">
+        <h3>Cut-off time</h3>
+        <p>
+          {% if area.same_day %}
+            Order before 2pm for delivery today, or before 4pm for tomorrow.
+          {% else %}
+            Order before 4pm for delivery tomorrow, seven days a week.
+          {% endif %}
+        </p>
+      </div>
+      <div class="infocard">
+        <h3>Delivery cost</h3>
+        <p>
+          From {{ delivery_options[0].price | euro }}, and free on orders over
+          {{ free_delivery_threshold | euro }}.
+        </p>
+      </div>
+      <div class="infocard">
+        <h3>Made where?</h3>
+        <p>
+          In our own Dublin 8 studio, by hand, on the morning of delivery —
+          never relayed to another florist.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Popular in {{ area.name }}</p>
+        <h2>What people here order</h2>
+      </div>
+      <a class="btn btn--outline" href="{{ url_for('shop.collections') }}">View all flowers</a>
+    </div>
+    <div class="grid grid--4">
+      {% for product in featured %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container container--mid">
+    <h2>Areas we cover in {{ area.name }}</h2>
+    <ul class="arealist" style="margin-top:1.25rem">
+      {% for district in area.districts %}
+        <li>{{ district }}</li>
+      {% endfor %}
+    </ul>
+    <p class="muted small" style="margin-top:1.5rem">
+      Not on the list? We almost certainly still deliver there — ring
+      <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>
+      and we'll confirm.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

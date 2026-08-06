@@ -1,0 +1,82 @@
+{# Shared read-only order breakdown, used on confirmation, tracking,
+   the customer account and the admin order screen. #}
+<div class="orderpanel">
+  <div class="orderpanel__head">
+    <div>
+      <strong>Order {{ order.reference }}</strong>
+      <span class="muted small"> · placed {{ order.created_at.strftime('%-d %B %Y') }}</span>
+    </div>
+    <span class="status-pill status-pill--{{ order.status }}">{{ order.status_label }}</span>
+  </div>
+  <div class="orderpanel__body">
+    <div class="orderpanel__grid">
+      <div>
+        <h3>Delivering to</h3>
+        <p>
+          <strong>{{ order.recipient_name }}</strong><br>
+          {{ order.delivery_address }}
+        </p>
+        {% if order.recipient_phone %}<p class="small muted">{{ order.recipient_phone }}</p>{% endif %}
+        {% if order.delivery_notes %}
+          <p class="small muted">Note: {{ order.delivery_notes }}</p>
+        {% endif %}
+      </div>
+      <div>
+        <h3>Delivery date</h3>
+        <p>{{ order.delivery_date.strftime('%A %-d %B %Y') }}</p>
+        <p class="small muted">
+          {% for option in [('standard', 'Standard next-day'), ('sameday', 'Same-day'), ('timed', 'Timed morning')] %}
+            {%- if option[0] == order.delivery_option %}{{ option[1] }} delivery{% endif -%}
+          {% endfor %}
+        </p>
+        {% if order.card_message %}
+          <h3 style="margin-top:1rem">Card message</h3>
+          <p class="small">“{{ order.card_message }}”</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <hr style="margin:1.5rem 0">
+
+    <div class="minicart">
+      {% for item in order.items %}
+        <div class="minicart__line">
+          {% if item.product %}
+            <img src="{{ url_for('static', filename=item.product.image) }}" alt="" width="54" height="68" loading="lazy">
+          {% else %}
+            <span></span>
+          {% endif %}
+          <span>
+            <span class="minicart__name">
+              {% if item.product_slug %}
+                <a href="{{ url_for('shop.product', slug=item.product_slug) }}">{{ item.product_name }}</a>
+              {% else %}{{ item.product_name }}{% endif %}
+            </span>
+            <span class="minicart__meta">{{ item.size_name }} × {{ item.quantity }}</span>
+            {% if item.addon_name_list %}
+              <span class="minicart__meta">
+                {% for name in item.addon_name_list %}+ {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}
+              </span>
+            {% endif %}
+          </span>
+          <span>{{ item.line_total | euro }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="summary__row"><span>Subtotal</span><span>{{ order.subtotal | euro }}</span></div>
+    <div class="summary__row">
+      <span>Delivery</span>
+      <span>{{ order.delivery_fee | euro if order.delivery_fee else "Free" }}</span>
+    </div>
+    {% if order.discount %}
+      <div class="summary__row summary__row--discount">
+        <span>Discount{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}</span>
+        <span>−{{ order.discount | euro }}</span>
+      </div>
+    {% endif %}
+    <div class="summary__row summary__row--total">
+      <span>Total paid</span><span>{{ order.total | euro }}</span>
+    </div>
+  </div>
+</div>

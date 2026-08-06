@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% set titles = {
+  'terms': 'Terms and conditions',
+  'privacy': 'Privacy policy',
+  'returns': 'Our guarantee, returns and refunds'
+} %}
+
+{% block title %}{{ titles[page] }} | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <h1>{{ titles[page] }}</h1>
+    <p class="muted small">Last updated {{ now_year }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container--narrow prose">
+
+    {% if page == 'terms' %}
+      <h2>1. Who we are</h2>
+      <p>
+        {{ brand.name }} is a florist trading from {{ brand.address }}. Contact us at
+        <a href="mailto:{{ brand.email }}">{{ brand.email }}</a> or
+        <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>.
+      </p>
+
+      <h2>2. Placing an order</h2>
+      <p>
+        Your order is an offer to buy. It is accepted when we send you an order
+        confirmation containing a reference beginning "NB-". Until that point no
+        contract exists between us.
+      </p>
+
+      <h2>3. Prices and payment</h2>
+      <p>
+        All prices are in euro and include VAT where applicable. Delivery is
+        charged separately and shown before you pay. We take payment at the time
+        of ordering.
+      </p>
+
+      <h2>4. Substitutions</h2>
+      <p>
+        Because we buy fresh at market each morning, an individual flower variety
+        may occasionally be unavailable. Where that happens we substitute a flower
+        of equal or greater value in the same colour palette and style. The size,
+        overall look and value of your arrangement will always match what you
+        ordered. We do not treat this lightly and we do not use it as licence to
+        send something different.
+      </p>
+
+      <h2>5. Delivery</h2>
+      <p>
+        We deliver to the address you give us. If nobody is home our driver will
+        try a neighbour and otherwise leave the flowers in a safe, shaded place,
+        photographing where they were left. We cannot be responsible for flowers
+        left at an address you supplied incorrectly.
+      </p>
+
+      <h2>6. Changes and cancellation</h2>
+      <p>
+        You may change or cancel an order free of charge up to 4pm on the day
+        before delivery. After that the flowers have been bought and conditioned
+        specifically for you, and we can no longer offer a full refund.
+      </p>
+
+      <h2>7. Our liability</h2>
+      <p>
+        Our liability is limited to the value of the order. Nothing in these terms
+        limits liability for death or personal injury caused by our negligence, or
+        for fraud. Your statutory rights as a consumer are unaffected.
+      </p>
+
+      <h2>8. Governing law</h2>
+      <p>These terms are governed by the laws of Ireland.</p>
+
+    {% elif page == 'privacy' %}
+      <h2>What we collect</h2>
+      <p>
+        When you order we collect your name, email address, phone number, the
+        recipient's name and delivery address, and your card details. Card details
+        are handled by our payment provider and are never stored on our systems.
+      </p>
+
+      <h2>Why we collect it</h2>
+      <p>
+        To take payment, make and deliver your flowers, keep you updated about the
+        delivery, and answer you if something goes wrong. That is a contractual
+        necessity — we cannot deliver flowers without an address.
+      </p>
+
+      <h2>Marketing</h2>
+      <p>
+        We only email you marketing if you have asked us to. Every email has an
+        unsubscribe link, and unsubscribing takes effect immediately. We never sell
+        or share your details with third parties for their own marketing.
+      </p>
+
+      <h2>Who else sees your data</h2>
+      <p>
+        Our payment provider, our delivery courier for orders outside Dublin,
+        Kildare and Wicklow, and our email provider. Each of them sees only what
+        they need to do their part.
+      </p>
+
+      <h2>How long we keep it</h2>
+      <p>
+        Order records for seven years, as Irish tax law requires. Marketing
+        contacts until you unsubscribe. Contact-form messages for two years.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        Under GDPR you can ask for a copy of your data, ask us to correct it, or
+        ask us to delete it where we are not legally required to keep it. Email
+        <a href="mailto:{{ brand.email }}">{{ brand.email }}</a> and we will respond
+        within one month. You may also complain to the Data Protection Commission.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        We use one essential cookie to remember your basket and keep you signed in.
+        That is all — there is no advertising or analytics tracking on this site.
+      </p>
+
+    {% else %}
+      <h2>The seven-day freshness guarantee</h2>
+      <p>
+        Every arrangement we send is guaranteed for seven days from delivery. If
+        your flowers wilt, droop or fail inside a week, send a photograph to
+        <a href="mailto:{{ brand.email }}">{{ brand.email }}</a> and we will
+        replace them or refund you in full — whichever you prefer.
+      </p>
+      <p>
+        You do not need to return anything. You do not need the original packaging.
+        We will not ask you to prove you changed the water.
+      </p>
+
+      <h2>If something arrives damaged</h2>
+      <p>
+        Tell us within 48 hours with a photograph and we will remake and redeliver
+        the arrangement at no cost, usually the next day.
+      </p>
+
+      <h2>If it arrives late</h2>
+      <p>
+        If we miss the delivery date you chose and the delay is ours, we refund the
+        delivery charge automatically. If the flowers arrive so late as to have
+        missed the occasion entirely, we refund the order in full.
+      </p>
+
+      <h2>Cancelling an order</h2>
+      <p>
+        Free of charge up to 4pm the day before delivery — ring the studio and we
+        will refund you the same day. After that point your flowers have been
+        bought and conditioned specifically for your order.
+      </p>
+      <p>
+        Perishable goods are exempt from the standard 14-day cooling-off period
+        under Irish and EU consumer law, which is why the cut-off exists. Our
+        guarantee above is offered voluntarily and goes beyond what the law
+        requires.
+      </p>
+
+      <h2>How to claim</h2>
+      <p>
+        Email <a href="mailto:{{ brand.email }}">{{ brand.email }}</a> with your
+        order reference and a photograph, or ring
+        <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>.
+        Refunds reach your card within three to five working days.
+      </p>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

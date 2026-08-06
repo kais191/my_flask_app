@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Delivery details | {{ brand.name }}{% endblock %}
+
+{% macro field_error(errors, name) %}
+  {% if errors.get(name) %}<span class="error">{{ errors[name] }}</span>{% endif %}
+{% endmacro %}
+
+{% block content %}
+
+<section class="section section--tight">
+  <div class="container">
+
+    <div class="steps-bar">
+      <span class="steps-bar__item is-active"><span class="steps-bar__num">1</span> Delivery details</span>
+      <span class="steps-bar__sep">—</span>
+      <span class="steps-bar__item"><span class="steps-bar__num">2</span> Payment</span>
+      <span class="steps-bar__sep">—</span>
+      <span class="steps-bar__item"><span class="steps-bar__num">3</span> Confirmation</span>
+    </div>
+
+    <form method="post" class="checkout" novalidate>
+      <div>
+        <h1 style="margin-bottom:1.5rem">Where are these flowers going?</h1>
+
+        <fieldset class="fieldset">
+          <legend>Who are they for?</legend>
+          <p class="fieldset__intro">The recipient's details, so our driver knows who to look for.</p>
+          <div class="form">
+            <div class="form__row">
+              <div class="field {% if errors.get('recipient_name') %}has-error{% endif %}">
+                <label for="recipient_name">Recipient's full name *</label>
+                <input id="recipient_name" name="recipient_name" type="text"
+                       value="{{ form.get('recipient_name', '') }}" required>
+                {{ field_error(errors, 'recipient_name') }}
+              </div>
+              <div class="field">
+                <label for="recipient_phone">Recipient's phone</label>
+                <input id="recipient_phone" name="recipient_phone" type="tel"
+                       value="{{ form.get('recipient_phone', '') }}">
+                <span class="hint">Our driver will text before arriving.</span>
+              </div>
+            </div>
+            <div class="field {% if errors.get('address_line1') %}has-error{% endif %}">
+              <label for="address_line1">Address line 1 *</label>
+              <input id="address_line1" name="address_line1" type="text"
+                     value="{{ form.get('address_line1', '') }}" required>
+              {{ field_error(errors, 'address_line1') }}
+            </div>
+            <div class="field">
+              <label for="address_line2">Address line 2</label>
+              <input id="address_line2" name="address_line2" type="text"
+                     value="{{ form.get('address_line2', '') }}">
+            </div>
+            <div class="form__row">
+              <div class="field {% if errors.get('city') %}has-error{% endif %}">
+                <label for="city">Town or city *</label>
+                <input id="city" name="city" type="text" value="{{ form.get('city', '') }}" required>
+                {{ field_error(errors, 'city') }}
+              </div>
+              <div class="field {% if errors.get('county') %}has-error{% endif %}">
+                <label for="county">County *</label>
+                <select id="county" name="county" required>
+                  <option value="">Choose a county…</option>
+                  {% for county in counties %}
+                    <option value="{{ county }}" {% if form.get('county') == county %}selected{% endif %}>{{ county }}</option>
+                  {% endfor %}
+                </select>
+                {{ field_error(errors, 'county') }}
+              </div>
+            </div>
+            <div class="form__row">
+              <div class="field">
+                <label for="eircode">Eircode</label>
+                <input id="eircode" name="eircode" type="text" value="{{ form.get('eircode', '') }}"
+                       placeholder="D08 XH76">
+                <span class="hint">Helps our driver find the door first time.</span>
+              </div>
+              <div class="field">
+                <label for="delivery_notes">Delivery notes</label>
+                <input id="delivery_notes" name="delivery_notes" type="text"
+                       value="{{ form.get('delivery_notes', '') }}"
+                       placeholder="Leave with next door if out">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>When should they arrive?</legend>
+          <p class="fieldset__intro">
+            {% if same_day_open %}
+              Same-day orders are still open — place this before 2pm.
+            {% else %}
+              Same-day orders have closed for today. The earliest we can deliver
+              is {{ earliest.strftime('%A %-d %B') }}.
+            {% endif %}
+          </p>
+
+          <div class="radiocards">
+            {% for option in delivery_options %}
+              {% set is_sameday = option.code == 'sameday' %}
+              <label class="radiocard">
+                <input type="radio" name="delivery_option" value="{{ option.code }}"
+                       data-earliest="{{ (earliest_sameday if is_sameday else earliest).isoformat() }}"
+                       {% if is_sameday and not same_day_open %}disabled{% endif %}
+                       {% if form.get('delivery_option') == option.code
+                             or (not form.get('delivery_option') and loop.first) %}checked{% endif %}>
+                <span class="radiocard__box">
+                  <span class="radiocard__dot" aria-hidden="true"></span>
+                  <span class="radiocard__text">
+                    <span class="radiocard__name">{{ option.name }}</span>
+                    <span class="radiocard__blurb">
+                      {{ option.blurb }}
+                      {% if is_sameday and not same_day_open %} — closed for today{% endif %}
+                    </span>
+                  </span>
+                  <span class="radiocard__price">{{ option.price | euro }}</span>
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+          {{ field_error(errors, 'delivery_option') }}
+
+          <div class="field {% if errors.get('delivery_date') %}has-error{% endif %}" style="margin-top:1.25rem;max-width:280px">
+            <label for="delivery_date">Delivery date *</label>
+            <input id="delivery_date" name="delivery_date" type="date" required
+                   data-delivery-date data-max-date="{{ max_date.isoformat() }}"
+                   min="{{ earliest.isoformat() }}" max="{{ max_date.isoformat() }}"
+                   value="{{ form.get('delivery_date', earliest.isoformat()) }}">
+            {{ field_error(errors, 'delivery_date') }}
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Your message card</legend>
+          <p class="fieldset__intro">Free with every order, handwritten by the florist who makes your arrangement.</p>
+          <div class="cardnote">
+            <div class="field">
+              <label class="sr-only" for="card_message">Card message</label>
+              <textarea id="card_message" name="card_message" maxlength="450"
+                        data-counter="#card-count"
+                        placeholder="Happy birthday, Mam. Wish I could be there. — Ciara">{{ form.get('card_message', '') }}</textarea>
+              {{ field_error(errors, 'card_message') }}
+            </div>
+            <p class="cardnote__count" id="card-count"></p>
+            <p class="small muted" style="margin:0">
+              Leave it blank if you'd rather the flowers arrive without a note.
+            </p>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Your details</legend>
+          <p class="fieldset__intro">For your receipt and delivery updates — we never pass these to the recipient.</p>
+          <div class="form">
+            <div class="form__row">
+              <div class="field {% if errors.get('customer_name') %}has-error{% endif %}">
+                <label for="customer_name">Your name *</label>
+                <input id="customer_name" name="customer_name" type="text"
+                       value="{{ form.get('customer_name', '') }}" required>
+                {{ field_error(errors, 'customer_name') }}
+              </div>
+              <div class="field {% if errors.get('customer_email') %}has-error{% endif %}">
+                <label for="customer_email">Email *</label>
+                <input id="customer_email" name="customer_email" type="email"
+                       value="{{ form.get('customer_email', '') }}" required>
+                {{ field_error(errors, 'customer_email') }}
+              </div>
+            </div>
+            <div class="field" style="max-width:280px">
+              <label for="customer_phone">Your phone</label>
+              <input id="customer_phone" name="customer_phone" type="tel"
+                     value="{{ form.get('customer_phone', '') }}">
+            </div>
+          </div>
+        </fieldset>
+
+        <button class="btn btn--lg" type="submit">Continue to payment</button>
+      </div>
+
+      <aside class="summary">
+        <h2>Your order</h2>
+        <div class="minicart">
+          {% for item in totals["items"] %}
+            <div class="minicart__line">
+              <img src="{{ url_for('static', filename=item.product.image) }}" alt="" width="54" height="68" loading="lazy">
+              <span>
+                <span class="minicart__name">{{ item.product.name }}</span>
+                <span class="minicart__meta">
+                  {{ item.size.name }} × {{ item.quantity }}
+                  {%- if item.addons %} · {{ item.addons | length }} extra{{ '' if item.addons | length == 1 else 's' }}{% endif %}
+                </span>
+              </span>
+              <span>{{ item.line_total | euro }}</span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="summary__row">
+          <span>Subtotal</span><span>{{ totals["subtotal"] | euro }}</span>
+        </div>
+        <div class="summary__row">
+          <span>Delivery</span>
+          <span>{{ totals["delivery_fee"] | euro if totals["delivery_fee"] else "Free" }}</span>
+        </div>
+        {% if totals["discount"] %}
+          <div class="summary__row summary__row--discount">
+            <span>Discount ({{ totals["coupon"].code }})</span>
+            <span>−{{ totals["discount"] | euro }}</span>
+          </div>
+        {% endif %}
+        <div class="summary__row summary__row--total">
+          <span>Total</span><span>{{ totals["total"] | euro }}</span>
+        </div>
+        <p class="summary__note">
+          <a href="{{ url_for('cart.view') }}">Edit your basket</a>
+        </p>
+      </aside>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Your account | {{ brand.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <h1>Hello, {{ user.first_name }}</h1>
+    <p>{{ orders | length }} order{{ '' if orders | length == 1 else 's' }} placed
+      {%- if upcoming %} · {{ upcoming | length }} on the way{% endif %}.</p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container accountgrid">
+
+    <aside>
+      <ul class="accountnav">
+        <li><a href="#orders">Your orders</a></li>
+        <li><a href="#addresses">Saved addresses</a></li>
+        <li><a href="#details">Your details</a></li>
+        <li><a href="#password">Password</a></li>
+        {% if user.is_admin %}<li><a href="{{ url_for('admin.dashboard') }}">Studio dashboard</a></li>{% endif %}
+        <li><a href="{{ url_for('auth.logout') }}">Sign out</a></li>
+      </ul>
+    </aside>
+
+    <div>
+      {% if upcoming %}
+        <div class="panel" style="background:var(--cream);border-color:transparent">
+          <h2 style="font-size:1.15rem">On the way</h2>
+          {% for order in upcoming %}
+            <div class="orderrow">
+              <div>
+                <span class="orderrow__ref">{{ order.reference }}</span>
+                <p class="orderrow__meta">
+                  For {{ order.recipient_name }} · arriving
+                  {{ order.delivery_date.strftime('%A %-d %B') }}
+                </p>
+              </div>
+              <span class="status-pill status-pill--{{ order.status }}">{{ order.status_label }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="panel" id="orders">
+        <h2>Your orders</h2>
+        {% if orders %}
+          {% for order in orders %}
+            <div class="orderrow">
+              <div>
+                <a class="orderrow__ref" href="{{ url_for('auth.order_detail', reference=order.reference) }}">{{ order.reference }}</a>
+                <p class="orderrow__meta">
+                  {{ order.created_at.strftime('%-d %B %Y') }} ·
+                  {{ order.item_count }} item{{ '' if order.item_count == 1 else 's' }} ·
+                  {{ order.total | euro }}
+                </p>
+              </div>
+              <span class="status-pill status-pill--{{ order.status }}">{{ order.status_label }}</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="muted">You haven't ordered anything yet.</p>
+          <a class="btn" href="{{ url_for('shop.collections') }}">Browse our flowers</a>
+        {% endif %}
+      </div>
+
+      <div class="panel" id="addresses">
+        <h2>Saved addresses</h2>
+        {% if user.addresses %}
+          <div class="form" style="margin-bottom:1.5rem">
+            {% for address in user.addresses %}
+              <div class="addresscard">
+                <div>
+                  <strong>{{ address.label }} — {{ address.recipient_name }}</strong>
+                  <span class="muted">{{ address.one_line }}</span>
+                </div>
+                <form method="post" action="{{ url_for('auth.delete_address', address_id=address.id) }}">
+                  <button class="btn--link" type="submit">Remove</button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">No saved addresses yet. Add one to speed up checkout.</p>
+        {% endif %}
+
+        <details>
+          <summary style="cursor:pointer;font-weight:600;color:var(--green-700)">Add an address</summary>
+          <form class="form" method="post" action="{{ url_for('auth.add_address') }}" style="margin-top:1.25rem">
+            <div class="form__row">
+              <div class="field">
+                <label for="addr-label">Label</label>
+                <input id="addr-label" name="label" type="text" placeholder="Mam's house">
+              </div>
+              <div class="field">
+                <label for="addr-name">Recipient name *</label>
+                <input id="addr-name" name="recipient_name" type="text" required>
+              </div>
+            </div>
+            <div class="field">
+              <label for="addr-line1">Address line 1 *</label>
+              <input id="addr-line1" name="line1" type="text" required>
+            </div>
+            <div class="field">
+              <label for="addr-line2">Address line 2</label>
+              <input id="addr-line2" name="line2" type="text">
+            </div>
+            <div class="form__row">
+              <div class="field">
+                <label for="addr-city">Town or city *</label>
+                <input id="addr-city" name="city" type="text" required>
+              </div>
+              <div class="field">
+                <label for="addr-county">County *</label>
+                <input id="addr-county" name="county" type="text" required>
+              </div>
+            </div>
+            <div class="form__row">
+              <div class="field">
+                <label for="addr-eircode">Eircode</label>
+                <input id="addr-eircode" name="eircode" type="text">
+              </div>
+              <div class="field">
+                <label for="addr-phone">Phone</label>
+                <input id="addr-phone" name="phone" type="tel">
+              </div>
+            </div>
+            <button class="btn" type="submit">Save address</button>
+          </form>
+        </details>
+      </div>
+
+      <div class="panel" id="details">
+        <h2>Your details</h2>
+        <form class="form" method="post" action="{{ url_for('auth.update_details') }}">
+          <div class="form__row">
+            <div class="field">
+              <label for="acct-first">First name</label>
+              <input id="acct-first" name="first_name" type="text" value="{{ user.first_name }}" required>
+            </div>
+            <div class="field">
+              <label for="acct-last">Surname</label>
+              <input id="acct-last" name="last_name" type="text" value="{{ user.last_name }}" required>
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="field">
+              <label for="acct-email">Email</label>
+              <input id="acct-email" type="email" value="{{ user.email }}" disabled>
+              <span class="hint">Ring the studio if you need to change this.</span>
+            </div>
+            <div class="field">
+              <label for="acct-phone">Phone</label>
+              <input id="acct-phone" name="phone" type="tel" value="{{ user.phone or '' }}">
+            </div>
+          </div>
+          <button class="btn" type="submit">Save changes</button>
+        </form>
+      </div>
+
+      <div class="panel" id="password">
+        <h2>Change password</h2>
+        <form class="form" method="post" action="{{ url_for('auth.change_password') }}" style="max-width:420px">
+          <div class="field">
+            <label for="current_password">Current password</label>
+            <input id="current_password" name="current_password" type="password" autocomplete="current-password" required>
+          </div>
+          <div class="field">
+            <label for="new_password">New password</label>
+            <input id="new_password" name="new_password" type="password" autocomplete="new-password" required>
+          </div>
+          <div class="field">
+            <label for="confirm_password">Confirm new password</label>
+            <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" required>
+          </div>
+          <button class="btn" type="submit">Update password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

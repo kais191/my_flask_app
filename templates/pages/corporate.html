@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Corporate flowers &amp; weekly office accounts | {{ brand.name }}{% endblock %}
+{% block description %}Weekly office flowers, client gifting and event arrangements across Dublin. Monthly invoicing, one named florist, no contracts.{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner pagehead--split">
+    <div>
+      <p class="eyebrow">For business</p>
+      <h1>Corporate flowers, done quietly and well</h1>
+      <p class="lead">
+        Weekly arrangements for receptions and boardrooms, client gifting at
+        scale, and event work. One named florist looks after your account, so
+        you are not explaining yourself to somebody new every week.
+      </p>
+      <a class="btn btn--lg" href="{{ url_for('main.contact') }}" style="margin-top:1rem">Request a quote</a>
+    </div>
+    <div class="pagehead__art">
+      <img src="{{ url_for('static', filename='img/collections/luxury.svg') }}" alt="" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="infogrid">
+      <div class="infocard">
+        <p class="infocard__price">from €65/week</p>
+        <h3>Weekly office flowers</h3>
+        <p>
+          A fresh arrangement delivered and placed on the same day each week,
+          with the previous week's taken away and composted. Vases included.
+        </p>
+      </div>
+      <div class="infocard">
+        <p class="infocard__price">from €45/gift</p>
+        <h3>Client gifting</h3>
+        <p>
+          Bulk orders with individual handwritten cards, delivered nationwide on
+          a date you choose. We handle the address list.
+        </p>
+      </div>
+      <div class="infocard">
+        <p class="infocard__price">POA</p>
+        <h3>Events &amp; launches</h3>
+        <p>
+          Installations, table arrangements and entrance pieces, set up and
+          struck by our own team.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container container--narrow prose">
+    <h2>How a corporate account works</h2>
+    <ol>
+      <li><strong>A short call.</strong> We talk about the space, the budget and how often you want flowers.</li>
+      <li><strong>A trial week.</strong> We deliver one arrangement with no commitment, so you can see the standard.</li>
+      <li><strong>A standing order.</strong> If you're happy, we set a weekly or fortnightly slot and a named florist.</li>
+      <li><strong>Monthly invoicing.</strong> One invoice at the end of the month, 30-day terms.</li>
+    </ol>
+    <p>
+      There is no contract and no notice period. If it stops working for you,
+      tell us and we'll stop.
+    </p>
+
+    <h2>Who we look after</h2>
+    <p>
+      Solicitors, hotels, dental practices, two theatres and a surprising number
+      of accountancy firms, mostly across Dublin 1, 2 and 4. We're happy to put
+      you in touch with a current client for a reference.
+    </p>
+
+    <p style="margin-top:2rem">
+      <a class="btn" href="{{ url_for('main.contact') }}">Talk to us about an account</a>
+    </p>
+  </div>
+</section>
+
+{% endblock %}

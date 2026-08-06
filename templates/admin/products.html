@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Products | Studio dashboard{% endblock %}
+
+{% block admin %}
+<h1>Products</h1>
+<p class="muted">Adjust prices and take arrangements off sale. Copy and imagery come from the catalogue file.</p>
+
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table class="data">
+    <thead>
+      <tr><th></th><th>Product</th><th>Collection</th><th>Price (€)</th><th>Live</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        <tr>
+          <td style="width:56px">
+            <img src="{{ url_for('static', filename=product.image) }}" alt="" width="44" height="55"
+                 style="border-radius:3px" loading="lazy">
+          </td>
+          <td>
+            <a href="{{ url_for('shop.product', slug=product.slug) }}">{{ product.name }}</a><br>
+            <span class="muted small">{{ product.slug }}</span>
+          </td>
+          <td class="small">{{ product.collection.name }}</td>
+          <td colspan="3">
+            <form method="post" action="{{ url_for('admin.update_product', product_id=product.id) }}"
+                  class="filterbar" style="margin:0;gap:.75rem">
+              <input type="number" name="price" step="0.01" min="0"
+                     value="{{ '%.2f' % (product.price / 100) }}" style="width:100px">
+              <label class="checkline" style="font-size:.82rem">
+                <input type="checkbox" name="is_active" {% if product.is_active %}checked{% endif %}>
+                <span>On sale</span>
+              </label>
+              <button class="btn btn--sm btn--outline" type="submit">Save</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,57 +1,260 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-    <nav>
-        <div><strong>My Flask App</strong></div>
-        <div>
-            {% if session.get('user') %}
-                <span>Hello, {{ session['user'] }}!</span>
-                <a href="{{ url_for('logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('register') }}">Register</a>
-            {% endif %}
-        </div>
-    </nav>
+{% block title %}Flower Delivery Dublin &amp; Ireland | {{ brand.name }}{% endblock %}
+{% block description %}Luxury hand-tied flowers made fresh each morning in our Dublin 8 studio. Same-day delivery across Dublin, Kildare and Wicklow; next-day nationwide. 7-day freshness guarantee.{% endblock %}
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1>Welcome to Our Website</h1>
-        <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Hero image" onerror="this.style.display='none'">
-    </section>
+{% block content %}
 
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flashes">
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <!-- Welcome Message -->
-    <div class="welcome">
-        {% if session.get('user') %}
-            <p>Glad to see you back, {{ session['user'] }}!</p>
-        {% else %}
-            <p>Please log in or register to get started.</p>
-        {% endif %}
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow">Dublin florist · Est. 2019</p>
+      <h1>Flowers worth coming home to</h1>
+      <p class="hero__lead">
+        Every arrangement is built by hand in our Dublin 8 studio on the morning
+        it is delivered — never picked off a shelf, never shipped in a box from
+        somewhere else.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--lg" href="{{ url_for('shop.collections') }}">Shop all flowers</a>
+        <a class="btn btn--lg btn--ghost" href="{{ url_for('shop.occasions') }}">Shop by occasion</a>
+      </div>
+      <ul class="hero__points">
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          <span><strong>Same-day delivery</strong> in Dublin, Kildare &amp; Wicklow — order before 2pm</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          <span><strong>Next-day everywhere else</strong> in Ireland, seven days a week</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          <span><strong>Free handwritten card</strong> with every order, written by your florist</span>
+        </li>
+      </ul>
     </div>
+    <div class="hero__art">
+      <img src="{{ url_for('static', filename='img/scenes/hero.svg') }}"
+           alt="Three Nested Blooms arrangements: a blue hydrangea vase, a red rose hatbox and a peach basket"
+           width="1600" height="1000" fetchpriority="high">
+      <div class="hero__badge">
+        <span class="hero__badge-mark">★</span>
+        <span>
+          <strong>4.9 out of 5</strong>
+          <span>from 2,400+ Irish customers</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Gallery Section -->
-    <section class="gallery">
-        {% for i in range(1, 7) %}
-            <img src="{{ url_for('static', filename='images/image' ~ i ~ '.jpg') }}" alt="Gallery image {{ i }}" onerror="this.style.display='none'">
-        {% endfor %}
-    </section>
+<section class="usps">
+  <div class="container usps__grid">
+    <div class="usp">
+      <span class="usp__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+      </span>
+      <div>
+        <h3>Same-day delivery</h3>
+        <p>Our own drivers cover Dublin, Kildare and Wicklow. Order by 2pm.</p>
+      </div>
+    </div>
+    <div class="usp">
+      <span class="usp__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+      </span>
+      <div>
+        <h3>Made in Dublin 8</h3>
+        <p>One studio, one team. Nothing is outsourced to a relay network.</p>
+      </div>
+    </div>
+    <div class="usp">
+      <span class="usp__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1L12 16.8 6.6 19.7l1.2-6.1L3.3 9.4l6.1-.8z"/></svg>
+      </span>
+      <div>
+        <h3>7-day guarantee</h3>
+        <p>If they wilt inside a week we replace them or refund you in full.</p>
+      </div>
+    </div>
+    <div class="usp">
+      <span class="usp__icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 9h16"/><path d="M9 15h6"/></svg>
+      </span>
+      <div>
+        <h3>Handwritten cards</h3>
+        <p>Free with every order, written out by the florist who makes it.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-</body>
-</html>
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Most loved</p>
+        <h2>Our bestsellers</h2>
+        <p>The arrangements our customers come back for, week after week.</p>
+      </div>
+      <a class="btn btn--outline" href="{{ url_for('shop.collections') }}">View all flowers</a>
+    </div>
+    <div class="grid grid--4">
+      {% for product in bestsellers %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container">
+    <div class="section__head center" style="justify-content:center">
+      <div>
+        <p class="eyebrow">Shop by occasion</p>
+        <h2>What's the occasion?</h2>
+        <p>Tell us the reason and we'll show you what suits it best.</p>
+      </div>
+    </div>
+    <div class="tiles tiles--4">
+      {% for occasion in occasions %}
+        <a class="tile" href="{{ url_for('shop.occasion', slug=occasion.slug) }}">
+          <img src="{{ url_for('static', filename=occasion.image) }}" alt="" loading="lazy" width="400" height="400">
+          <span class="tile__label">
+            <strong>{{ occasion.name }}</strong>
+            <span>{{ occasion.blurb }}</span>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Our collections</p>
+        <h2>Choose your style</h2>
+        <p>Hatbox, hand-tied, vase or basket — each one is made a different way.</p>
+      </div>
+    </div>
+    <div class="tiles tiles--5">
+      {% for collection in collections[:5] %}
+        <a class="tile" href="{{ url_for('shop.collection', slug=collection.slug) }}">
+          <img src="{{ url_for('static', filename=collection.image) }}" alt="" loading="lazy" width="400" height="400">
+          <span class="tile__label">
+            <strong>{{ collection.name }}</strong>
+            <span>{{ collection.headline }}</span>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--green">
+  <div class="container">
+    <div class="section__head center" style="justify-content:center">
+      <div>
+        <p class="eyebrow">How it works</p>
+        <h2>Four steps, no fuss</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Choose your flowers</h3>
+        <p>Pick an arrangement and a size. Add chocolates, fizz or a candle if you like.</p>
+      </div>
+      <div class="step">
+        <h3>Pick a date</h3>
+        <p>Today across Dublin, tomorrow nationwide, or any date up to ninety days ahead.</p>
+      </div>
+      <div class="step">
+        <h3>We make it that morning</h3>
+        <p>Your florist conditions the stems, builds the arrangement and writes your card.</p>
+      </div>
+      <div class="step">
+        <h3>Delivered and photographed</h3>
+        <p>You get a text when it arrives — with a photo if nobody was home.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div class="split__art">
+      <img src="{{ url_for('static', filename='img/collections/luxury.svg') }}"
+           alt="A luxury Nested Blooms arrangement" loading="lazy" width="700" height="700">
+    </div>
+    <div>
+      <p class="eyebrow">The Luxury Collection</p>
+      <h2>For the occasions that deserve more</h2>
+      <p class="lead">
+        Engagements, milestone anniversaries, and the odd grand apology. Our
+        luxury arrangements use larger heads and longer stems, and are built by
+        one of our senior florists — an hour's work for the biggest of them.
+      </p>
+      <p>
+        Every luxury order is checked personally before it leaves the studio,
+        and we will ring you if anything about the delivery looks uncertain.
+      </p>
+      <a class="btn" href="{{ url_for('shop.collection', slug='luxury') }}">Explore the collection</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">What people say</p>
+        <h2>2,400 reviews, 4.9 stars</h2>
+      </div>
+      <a class="btn btn--outline" href="{{ url_for('main.reviews') }}">Read all reviews</a>
+    </div>
+    <div class="quotes">
+      {% for testimonial in testimonials %}
+        <figure class="quote">
+          <div class="quote__stars" aria-label="{{ testimonial.rating }} out of 5">
+            {% for _ in range(testimonial.rating) %}★{% endfor %}
+          </div>
+          <blockquote>“{{ testimonial.quote }}”</blockquote>
+          <figcaption class="quote__author">
+            <strong>{{ testimonial.author }}</strong> — {{ testimonial.location }}
+          </figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Delivery</p>
+        <h2>Where and when we deliver</h2>
+        <p>Three ways to get flowers where they need to be.</p>
+      </div>
+      <a class="btn btn--outline" href="{{ url_for('main.delivery') }}">Full delivery information</a>
+    </div>
+    <div class="infogrid">
+      {% for option in delivery_options %}
+        <div class="infocard">
+          <p class="infocard__price">{{ option.price | euro }}</p>
+          <h3>{{ option.name }}</h3>
+          <p>{{ option.blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="muted small" style="margin-top:1.25rem">
+      Standard delivery is free on orders over {{ free_delivery_threshold | euro }}.
+      We deliver to every county in Ireland and Northern Ireland.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

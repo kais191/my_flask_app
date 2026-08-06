@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Reviews | Studio dashboard{% endblock %}
+
+{% block admin %}
+<h1>Reviews</h1>
+<p class="muted">Unapproved reviews are hidden from the shop until you approve them.</p>
+
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table class="data">
+    <thead>
+      <tr><th>Date</th><th>Product</th><th>Author</th><th>Rating</th><th>Review</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for review in reviews %}
+        <tr style="{% if not review.is_approved %}background:var(--danger-bg){% endif %}">
+          <td class="small">{{ review.created_at.strftime('%d/%m/%y') }}</td>
+          <td class="small">
+            <a href="{{ url_for('shop.product', slug=review.product.slug) }}">{{ review.product.name }}</a>
+          </td>
+          <td class="small">
+            {{ review.author }}
+            {% if review.location %}<br><span class="muted">{{ review.location }}</span>{% endif %}
+          </td>
+          <td class="small"><span class="stars">{% for _ in range(review.rating) %}★{% endfor %}</span></td>
+          <td class="small" style="max-width:360px">
+            {% if review.title %}<strong>{{ review.title }}</strong><br>{% endif %}
+            {{ review.body }}
+          </td>
+          <td style="white-space:nowrap">
+            <form method="post" action="{{ url_for('admin.approve_review', review_id=review.id) }}" style="display:inline">
+              <button class="btn btn--sm btn--outline" type="submit">
+                {{ 'Hide' if review.is_approved else 'Approve' }}
+              </button>
+            </form>
+            <form method="post" action="{{ url_for('admin.delete_review', review_id=review.id) }}" style="display:inline">
+              <button class="btn--link" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="muted">No reviews yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

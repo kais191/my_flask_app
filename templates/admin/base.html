@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<div class="adminbar">
+  <div class="container adminbar__inner">
+    <strong>Studio dashboard</strong>
+    <a href="{{ url_for('admin.dashboard') }}">Overview</a>
+    <a href="{{ url_for('admin.orders') }}">Orders</a>
+    <a href="{{ url_for('admin.products') }}">Products</a>
+    <a href="{{ url_for('admin.reviews') }}">Reviews</a>
+    <a href="{{ url_for('admin.messages') }}">Messages</a>
+    <a href="{{ url_for('main.index') }}" style="margin-left:auto">View shop →</a>
+  </div>
+</div>
+
+<section class="section section--tight">
+  <div class="container">
+    {% block admin %}{% endblock %}
+  </div>
+</section>
+{% endblock %}

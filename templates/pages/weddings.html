@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Wedding flowers | {{ brand.name }}{% endblock %}
+{% block description %}Wedding flowers from an independent Dublin florist. Bouquets, buttonholes, ceremony and reception arrangements, with one florist from consultation to the day itself.{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner pagehead--split">
+    <div>
+      <p class="eyebrow">Weddings</p>
+      <h1>The flowers, handled</h1>
+      <p class="lead">
+        We take a small number of weddings each year — usually around twenty —
+        because the same florist who sits down with you is the one who builds
+        your bouquet and sets up the room on the day.
+      </p>
+      <a class="btn btn--lg" href="{{ url_for('main.contact') }}" style="margin-top:1rem">Enquire about your date</a>
+    </div>
+    <div class="pagehead__art">
+      <img src="{{ url_for('static', filename='img/products/peony-dream-bouquet.svg') }}" alt="" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container--narrow prose">
+    <h2>What we cover</h2>
+    <ul>
+      <li>Bridal and bridesmaid bouquets</li>
+      <li>Buttonholes, corsages and flower crowns</li>
+      <li>Ceremony arrangements, pedestals and aisle work</li>
+      <li>Table centres, top-table runners and cake flowers</li>
+      <li>Installations — arches, hanging and entrance pieces</li>
+      <li>Setup, delivery and same-night strike</li>
+    </ul>
+
+    <h2>How it works</h2>
+    <ol>
+      <li><strong>Enquiry.</strong> Tell us your date, venue and rough budget. We'll say straight away whether we're free.</li>
+      <li><strong>Consultation.</strong> An hour in the studio, with real stems in your hands rather than a mood board on a screen.</li>
+      <li><strong>Proposal.</strong> An itemised quote within a week. Nothing is booked until you're happy with it.</li>
+      <li><strong>Deposit.</strong> 25% secures the date. The balance is due a fortnight before.</li>
+      <li><strong>The week before.</strong> A final call to confirm timings, numbers and access.</li>
+      <li><strong>The day.</strong> We deliver, set up, and come back to strike if the venue needs it.</li>
+    </ol>
+
+    <h2>Budget, honestly</h2>
+    <p>
+      Most of our weddings land between €1,200 and €3,500. Below about €800 you
+      would be better served by our ready-made arrangements, and we will tell
+      you that rather than take the booking.
+    </p>
+
+    <h2>Seasonality</h2>
+    <p>
+      We will always steer you towards what is genuinely good that month. Peonies
+      in June are extraordinary; peonies in November are flown in, expensive and
+      disappointing. A good florist tells you this before you fall in love with
+      a photograph.
+    </p>
+
+    <p style="margin-top:2rem">
+      <a class="btn" href="{{ url_for('main.contact') }}">Check your date</a>
+    </p>
+  </div>
+</section>
+
+{% endblock %}

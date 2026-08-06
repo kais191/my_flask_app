@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Shop flowers by occasion | {{ brand.name }}{% endblock %}
+{% block description %}Birthday, anniversary, new baby, sympathy and thank-you flowers, delivered anywhere in Ireland.{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <h1>Shop by occasion</h1>
+    <p class="lead">
+      Tell us the reason and we'll narrow it down. Every arrangement on this
+      site is made to order in Dublin and delivered with a handwritten card.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tiles tiles--4">
+      {% for occasion in occasions %}
+        <a class="tile" href="{{ url_for('shop.occasion', slug=occasion.slug) }}">
+          <img src="{{ url_for('static', filename=occasion.image) }}" alt="" loading="lazy" width="400" height="400">
+          <span class="tile__label">
+            <strong>{{ occasion.name }}</strong>
+            <span>{{ occasion.blurb }}</span>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

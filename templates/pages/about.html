@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Our Dublin studio | {{ brand.name }}{% endblock %}
+{% block description %}Nested Blooms is an independent florist in Dublin 8. Everything we sell is made by hand in our own studio on the day it is delivered.{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner pagehead--split">
+    <div>
+      <p class="eyebrow">Our studio</p>
+      <h1>One studio, one team, no middlemen</h1>
+      <p class="lead">
+        Nested Blooms is an independent florist in Dublin 8. We are not a relay
+        network, and we do not pass your order to whoever happens to be nearest.
+        Every arrangement on this site is made by our own florists, by hand, in
+        one room, on the morning it goes out.
+      </p>
+    </div>
+    <div class="pagehead__art">
+      <img src="{{ url_for('static', filename='img/scenes/hero.svg') }}" alt="Nested Blooms arrangements" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container prose">
+    <h2>How we got here</h2>
+    <p>
+      We started in 2019 with a single bucket trolley on Grafton Street and a
+      van that failed its NCT twice. The idea was simple and slightly stubborn:
+      that people should be able to order flowers online and get something that
+      looks like the photograph, made by a person whose name you could learn if
+      you asked.
+    </p>
+    <p>
+      Six years later there are eleven of us. We still buy at the Dutch auction
+      on Monday, Wednesday and Friday, and we still buy peonies, tulips,
+      daffodils and most of our foliage from Irish growers in Meath, Wicklow and
+      Cork whenever the season allows it.
+    </p>
+
+    <h2>What we will not do</h2>
+    <p>
+      We won't send your order to a third-party florist in another county and
+      hope for the best. We won't photograph a forty-stem bouquet and deliver a
+      twenty-stem one. And we won't leave flowers baking on a doorstep in the
+      sun — if nobody is home, our driver finds shade, tries a neighbour, and
+      sends you a photograph of exactly where they left them.
+    </p>
+
+    <h2>The freshness guarantee</h2>
+    <p>
+      Our flowers are guaranteed for seven days. If they wilt inside a week,
+      send us a photograph and we will replace them or refund you in full. You
+      do not need to return anything, and we do not ask for the original
+      packaging. In six years we have never argued with anyone about it.
+    </p>
+
+    <h2>Sustainability, honestly</h2>
+    <p>
+      We are not going to claim to be carbon neutral. What we can tell you is
+      that we use no floral foam except in hatboxes and funeral tributes where
+      there is no alternative, that our wrapping is recycled kraft paper and
+      compostable cellophane, that our ribbons are linen or cotton, and that
+      unsold stems go to two nursing homes in Rialto rather than into a bin.
+    </p>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container">
+    <div class="section__head center" style="justify-content:center">
+      <div>
+        <p class="eyebrow">Visit us</p>
+        <h2>Come and see the studio</h2>
+      </div>
+    </div>
+    <div class="infogrid">
+      <div class="infocard">
+        <h3>Address</h3>
+        <p>{{ brand.address }}</p>
+      </div>
+      <div class="infocard">
+        <h3>Opening hours</h3>
+        <p>{{ brand.opening_hours }}</p>
+      </div>
+      <div class="infocard">
+        <h3>Get in touch</h3>
+        <p>
+          <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a><br>
+          <a href="mailto:{{ brand.email }}">{{ brand.email }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

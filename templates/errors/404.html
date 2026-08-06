@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found | {{ brand.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container empty">
+    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="72" height="72" style="margin:0 auto 1.5rem">
+    <h1>We couldn't find that page</h1>
+    <p>
+      It may have been moved, or the link may have a typo in it. Our flowers are
+      all still here.
+    </p>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <a class="btn" href="{{ url_for('shop.collections') }}">Shop all flowers</a>
+      <a class="btn btn--ghost" href="{{ url_for('main.index') }}">Back to the homepage</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

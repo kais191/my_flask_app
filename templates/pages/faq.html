@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Frequently asked questions | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <p class="eyebrow">Help</p>
+    <h1>Frequently asked questions</h1>
+    <p class="lead">
+      If your question isn't here, ring the studio on
+      <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a> —
+      a florist answers, not a call centre.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container--narrow">
+    {% for category, items in grouped %}
+      <div class="faqgroup">
+        <h2>{{ category }}</h2>
+        <div class="accordion">
+          {% for faq in items %}
+            <div class="accordion__item">
+              <button class="accordion__trigger" type="button"
+                      aria-controls="faq-{{ loop.index }}-{{ category | lower }}" aria-expanded="true">
+                {{ faq.question }}
+              </button>
+              <div class="accordion__panel" id="faq-{{ loop.index }}-{{ category | lower }}">
+                <p>{{ faq.answer }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="panel" style="background:var(--cream);border-color:transparent">
+      <h2 style="font-size:1.2rem">Still stuck?</h2>
+      <p class="muted">We answer every message within one working day.</p>
+      <a class="btn" href="{{ url_for('main.contact') }}">Contact the studio</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

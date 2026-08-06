@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Flower delivery information | {{ brand.name }}{% endblock %}
+{% block description %}Same-day flower delivery in Dublin, Kildare and Wicklow before 2pm. Next-day delivery across Ireland and Northern Ireland, seven days a week.{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <p class="eyebrow">Delivery</p>
+    <h1>Where and when we deliver</h1>
+    <p class="lead">
+      We deliver seven days a week to every county in Ireland and Northern
+      Ireland. Dublin, Kildare and Wicklow are covered by our own drivers;
+      everywhere else goes next-day by courier, boxed and in water.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="infogrid">
+      {% for option in delivery_options %}
+        <div class="infocard">
+          <p class="infocard__price">{{ option.price | euro }}</p>
+          <h3>{{ option.name }}</h3>
+          <p>{{ option.blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="muted small" style="margin-top:1.25rem">
+      Standard delivery is free on orders over {{ free_delivery_threshold | euro }}.
+    </p>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Coverage</p>
+        <h2>Delivery areas</h2>
+        <p>Choose your county for local cut-off times and coverage.</p>
+      </div>
+    </div>
+    <div class="grid grid--4">
+      {% for area in areas %}
+        <a class="infocard" href="{{ url_for('main.delivery_area', slug=area.slug) }}" style="text-decoration:none">
+          <h3>{{ area.name }}</h3>
+          <p>
+            {% if area.same_day %}Same-day before 2pm{% else %}Next-day delivery{% endif %}
+            · {{ area.districts | length }} areas covered
+          </p>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container--narrow prose">
+    <h2>Delivery questions</h2>
+    {% for faq in faqs %}
+      <h3>{{ faq.question }}</h3>
+      <p>{{ faq.answer }}</p>
+    {% endfor %}
+    <p style="margin-top:2rem">
+      <a class="btn" href="{{ url_for('main.faq') }}">All frequently asked questions</a>
+    </p>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Your basket | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="section section--tight">
+  <div class="container">
+    <h1>Your basket</h1>
+
+    {% if totals["items"] %}
+      <div class="cartlayout" style="margin-top:2rem">
+        <div>
+          <div class="cartlines">
+            {% for item in totals["items"] %}
+              <div class="cartline">
+                <a class="cartline__media" href="{{ url_for('shop.product', slug=item.product.slug) }}">
+                  <img src="{{ url_for('static', filename=item.product.image) }}"
+                       alt="{{ item.product.name }}" width="104" height="130" loading="lazy">
+                </a>
+                <div>
+                  <h2 class="cartline__name">
+                    <a href="{{ url_for('shop.product', slug=item.product.slug) }}">{{ item.product.name }}</a>
+                  </h2>
+                  <div class="cartline__meta">
+                    <span>{{ item.size.name }} size</span>
+                    {% if item.addons %}
+                      <ul>
+                        {% for addon in item.addons %}
+                          <li>+ {{ addon.name }} ({{ addon.price | euro }})</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+                  <div class="cartline__controls">
+                    <form method="post" action="{{ url_for('cart.update') }}" class="qty">
+                      <input type="hidden" name="key" value="{{ item.key }}">
+                      <label class="sr-only" for="qty-{{ loop.index }}">Quantity for {{ item.product.name }}</label>
+                      <input id="qty-{{ loop.index }}" type="number" name="quantity"
+                             value="{{ item.quantity }}" min="0" max="99"
+                             onchange="this.form.submit()">
+                      <noscript><button class="btn btn--sm" type="submit">Update</button></noscript>
+                    </form>
+                    <form method="post" action="{{ url_for('cart.remove') }}">
+                      <input type="hidden" name="key" value="{{ item.key }}">
+                      <button class="btn--link" type="submit">Remove</button>
+                    </form>
+                  </div>
+                </div>
+                <div class="cartline__price">
+                  {{ item.line_total | euro }}
+                  {% if item.quantity > 1 %}
+                    <span class="cartline__unit">{{ item.unit_price | euro }} each</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <p style="margin-top:1.5rem">
+            <a href="{{ url_for('shop.collections') }}">← Continue shopping</a>
+          </p>
+        </div>
+
+        <aside class="summary">
+          <h2>Order summary</h2>
+
+          {% if not totals["free_delivery_earned"] %}
+            <p class="small muted" style="margin-bottom:.25rem">
+              Spend {{ totals["remaining_for_free"] | euro }} more for free standard delivery
+            </p>
+            <div class="progress">
+              <div class="progress__bar"
+                   style="width: {{ ((totals['subtotal'] / totals['free_delivery_threshold']) * 100) | round | int }}%"></div>
+            </div>
+          {% else %}
+            <p class="small" style="color:var(--success);margin-bottom:.75rem">
+              ✓ You've earned free standard delivery
+            </p>
+          {% endif %}
+
+          <div class="summary__row">
+            <span>Subtotal ({{ totals["count"] }} item{{ '' if totals["count"] == 1 else 's' }})</span>
+            <span>{{ totals["subtotal"] | euro }}</span>
+          </div>
+          <div class="summary__row">
+            <span>Standard delivery</span>
+            <span>{{ totals["delivery_fee"] | euro if totals["delivery_fee"] else "Free" }}</span>
+          </div>
+          {% if totals["discount"] %}
+            <div class="summary__row summary__row--discount">
+              <span>Discount ({{ totals["coupon"].code }})</span>
+              <span>−{{ totals["discount"] | euro }}</span>
+            </div>
+          {% endif %}
+          <div class="summary__row summary__row--total">
+            <span>Total</span>
+            <span>{{ totals["total"] | euro }}</span>
+          </div>
+
+          {% if totals["coupon"] and totals["coupon_applied"] %}
+            <div class="coupon-applied">
+              <span><strong>{{ totals["coupon"].code }}</strong> — {{ totals["coupon"].description }}</span>
+              <form method="post" action="{{ url_for('cart.coupon') }}">
+                <input type="hidden" name="code" value="">
+                <button class="btn--link" type="submit" style="color:inherit">Remove</button>
+              </form>
+            </div>
+          {% else %}
+            <form class="couponform" method="post" action="{{ url_for('cart.coupon') }}">
+              <label class="sr-only" for="coupon">Discount code</label>
+              <input id="coupon" type="text" name="code" placeholder="Discount code">
+              <button class="btn btn--outline btn--sm" type="submit">Apply</button>
+            </form>
+          {% endif %}
+
+          <a class="btn btn--lg btn--block" href="{{ url_for('checkout.details') }}">Go to checkout</a>
+          <p class="summary__note">
+            You'll choose your delivery date and write your card message at the
+            next step. Nothing is charged until you confirm.
+          </p>
+        </aside>
+      </div>
+
+      {% if suggestions %}
+        <div style="margin-top:4rem">
+          <div class="section__head">
+            <div>
+              <p class="eyebrow">Add to your order</p>
+              <h2>People often add these</h2>
+            </div>
+          </div>
+          <div class="grid grid--4">
+            {% for product in suggestions %}
+              {% include "partials/product_card.html" %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty">
+        <h2>Your basket is empty</h2>
+        <p>Nothing in here yet. Our bestsellers are a good place to start.</p>
+        <a class="btn btn--lg" href="{{ url_for('shop.collections') }}">Shop all flowers</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

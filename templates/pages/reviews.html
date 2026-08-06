@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Customer reviews | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <p class="eyebrow">Reviews</p>
+    <h1>What our customers say</h1>
+    {% if average %}
+      <p class="lead">
+        {{ average }} out of 5 from {{ total }} verified reviews across every
+        arrangement we make.
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="quotes">
+      {% for testimonial in testimonials %}
+        <figure class="quote">
+          <div class="quote__stars">{% for _ in range(testimonial.rating) %}★{% endfor %}</div>
+          <blockquote>“{{ testimonial.quote }}”</blockquote>
+          <figcaption class="quote__author">
+            <strong>{{ testimonial.author }}</strong> — {{ testimonial.location }}
+          </figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="container container--mid">
+    <h2>Recent product reviews</h2>
+    <div style="margin-top:1.5rem">
+      {% for review in reviews %}
+        <article class="review">
+          <div class="review__head">
+            <div class="stars" aria-label="{{ review.rating }} out of 5">
+              {% for _ in range(review.rating) %}★{% endfor %}
+            </div>
+            <span class="review__meta">
+              {{ review.author }}{% if review.location %}, {{ review.location }}{% endif %}
+              · {{ review.created_at.strftime('%d %B %Y') }}
+            </span>
+          </div>
+          {% if review.title %}<h4>{{ review.title }}</h4>{% endif %}
+          <p>{{ review.body }}</p>
+          <p class="small muted" style="margin-top:.4rem">
+            on <a href="{{ url_for('shop.product', slug=review.product.slug) }}">{{ review.product.name }}</a>
+          </p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

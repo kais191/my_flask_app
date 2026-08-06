@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Messages | Studio dashboard{% endblock %}
+
+{% block admin %}
+<h1>Messages</h1>
+
+<div class="table-wrap" style="margin:1.5rem 0 3rem">
+  <table class="data">
+    <thead>
+      <tr><th>Received</th><th>From</th><th>Subject</th><th>Message</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for message in messages %}
+        <tr style="{% if message.is_handled %}opacity:.55{% endif %}">
+          <td class="small">{{ message.created_at.strftime('%d/%m/%y %H:%M') }}</td>
+          <td class="small">
+            {{ message.name }}<br>
+            <a href="mailto:{{ message.email }}">{{ message.email }}</a>
+            {% if message.phone %}<br><span class="muted">{{ message.phone }}</span>{% endif %}
+          </td>
+          <td class="small">{{ message.subject }}</td>
+          <td class="small" style="max-width:380px">{{ message.message }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin.handle_message', message_id=message.id) }}">
+              <button class="btn btn--sm btn--outline" type="submit">
+                {{ 'Reopen' if message.is_handled else 'Mark done' }}
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="5" class="muted">No messages yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Newsletter subscribers ({{ subscribers | length }})</h2>
+<div class="table-wrap">
+  <table class="data" style="min-width:0">
+    <thead><tr><th>Email</th><th>Signed up</th></tr></thead>
+    <tbody>
+      {% for subscriber in subscribers %}
+        <tr>
+          <td class="small">{{ subscriber.email }}</td>
+          <td class="small">{{ subscriber.created_at.strftime('%d/%m/%Y') }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="2" class="muted">No subscribers yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Payment | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="section section--tight">
+  <div class="container">
+
+    <div class="steps-bar">
+      <span class="steps-bar__item is-done"><span class="steps-bar__num">✓</span> Delivery details</span>
+      <span class="steps-bar__sep">—</span>
+      <span class="steps-bar__item is-active"><span class="steps-bar__num">2</span> Payment</span>
+      <span class="steps-bar__sep">—</span>
+      <span class="steps-bar__item"><span class="steps-bar__num">3</span> Confirmation</span>
+    </div>
+
+    <div class="checkout">
+      <div>
+        <h1 style="margin-bottom:1.5rem">Payment</h1>
+
+        <div class="orderpanel">
+          <div class="orderpanel__head">
+            <strong>Delivery details</strong>
+            <a class="small" href="{{ url_for('checkout.details') }}">Edit</a>
+          </div>
+          <div class="orderpanel__body orderpanel__grid">
+            <div>
+              <h3>Delivering to</h3>
+              <p>
+                <strong>{{ details.recipient_name }}</strong><br>
+                {{ details.address_line1 }}<br>
+                {% if details.address_line2 %}{{ details.address_line2 }}<br>{% endif %}
+                {{ details.city }}, {{ details.county }}
+                {% if details.eircode %}<br>{{ details.eircode }}{% endif %}
+              </p>
+            </div>
+            <div>
+              <h3>Arriving</h3>
+              <p>{{ delivery_date.strftime('%A %-d %B %Y') if delivery_date else '—' }}</p>
+              <p class="muted small">{{ totals["delivery_option"].name }}</p>
+              {% if details.card_message %}
+                <h3 style="margin-top:1rem">Card message</h3>
+                <p class="small">“{{ details.card_message }}”</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="paybox">
+          <div class="paybox__secure">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v10H5z"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Secure payment — your card details are encrypted
+          </div>
+
+          <div class="demo-note">
+            <strong>Demonstration checkout</strong>
+            This shop is not connected to a payment provider, so no card is ever
+            charged and no card details are stored. Use any test number that
+            passes a Luhn check, such as <code>4242 4242 4242 4242</code>.
+          </div>
+
+          <form method="post" class="form" novalidate>
+            <div class="field {% if errors.get('card_name') %}has-error{% endif %}">
+              <label for="card_name">Name on card *</label>
+              <input id="card_name" name="card_name" type="text" autocomplete="cc-name"
+                     value="{{ form.get('card_name', '') }}" required>
+              {% if errors.get('card_name') %}<span class="error">{{ errors['card_name'] }}</span>{% endif %}
+            </div>
+
+            <div class="field {% if errors.get('card_number') %}has-error{% endif %}">
+              <label for="card_number">Card number *</label>
+              <input id="card_number" name="card_number" type="text" inputmode="numeric"
+                     autocomplete="cc-number" placeholder="4242 4242 4242 4242"
+                     data-card-number value="{{ form.get('card_number', '') }}" required>
+              {% if errors.get('card_number') %}<span class="error">{{ errors['card_number'] }}</span>{% endif %}
+            </div>
+
+            <div class="form__row">
+              <div class="field {% if errors.get('card_expiry') %}has-error{% endif %}">
+                <label for="card_expiry">Expiry date *</label>
+                <input id="card_expiry" name="card_expiry" type="text" inputmode="numeric"
+                       autocomplete="cc-exp" placeholder="MM/YY" maxlength="5"
+                       data-card-expiry value="{{ form.get('card_expiry', '') }}" required>
+                {% if errors.get('card_expiry') %}<span class="error">{{ errors['card_expiry'] }}</span>{% endif %}
+              </div>
+              <div class="field {% if errors.get('card_cvc') %}has-error{% endif %}">
+                <label for="card_cvc">Security code *</label>
+                <input id="card_cvc" name="card_cvc" type="text" inputmode="numeric"
+                       autocomplete="cc-csc" placeholder="123" maxlength="4"
+                       value="{{ form.get('card_cvc', '') }}" required>
+                {% if errors.get('card_cvc') %}<span class="error">{{ errors['card_cvc'] }}</span>{% endif %}
+              </div>
+            </div>
+
+            <label class="checkline">
+              <input type="checkbox" name="terms" required>
+              <span>
+                I agree to the <a href="{{ url_for('main.terms') }}">terms of sale</a>
+                and understand my flowers will be made fresh on the delivery date.
+              </span>
+            </label>
+
+            <button class="btn btn--lg btn--block" type="submit">
+              Pay {{ totals["total"] | euro }} and place order
+            </button>
+          </form>
+
+          <div class="trustline">
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              7-day freshness guarantee
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              Free handwritten card
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="summary">
+        <h2>Your order</h2>
+        <div class="minicart">
+          {% for item in totals["items"] %}
+            <div class="minicart__line">
+              <img src="{{ url_for('static', filename=item.product.image) }}" alt="" width="54" height="68" loading="lazy">
+              <span>
+                <span class="minicart__name">{{ item.product.name }}</span>
+                <span class="minicart__meta">{{ item.size.name }} × {{ item.quantity }}</span>
+                {% if item.addons %}
+                  <span class="minicart__meta">
+                    {% for addon in item.addons %}+ {{ addon.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                  </span>
+                {% endif %}
+              </span>
+              <span>{{ item.line_total | euro }}</span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="summary__row"><span>Subtotal</span><span>{{ totals["subtotal"] | euro }}</span></div>
+        <div class="summary__row">
+          <span>{{ totals["delivery_option"].name }}</span>
+          <span>{{ totals["delivery_fee"] | euro if totals["delivery_fee"] else "Free" }}</span>
+        </div>
+        {% if totals["discount"] %}
+          <div class="summary__row summary__row--discount">
+            <span>Discount ({{ totals["coupon"].code }})</span>
+            <span>−{{ totals["discount"] | euro }}</span>
+          </div>
+        {% endif %}
+        <div class="summary__row summary__row--total">
+          <span>Total</span><span>{{ totals["total"] | euro }}</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

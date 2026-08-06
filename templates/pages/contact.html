@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Contact us | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <p class="eyebrow">Get in touch</p>
+    <h1>Talk to the studio</h1>
+    <p class="lead">
+      A florist answers the phone during opening hours. For anything urgent —
+      a delivery going out today, a funeral tribute, a mistake we've made —
+      please ring rather than email.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="split">
+      <div>
+        <div class="formcard">
+          <h2>Send us a message</h2>
+          <p class="formcard__intro">We reply to everything within one working day.</p>
+          <form method="post" class="form">
+            <div class="form__row">
+              <div class="field">
+                <label for="name">Your name *</label>
+                <input id="name" name="name" type="text" value="{{ form.get('name', '') }}" required>
+              </div>
+              <div class="field">
+                <label for="email">Email *</label>
+                <input id="email" name="email" type="email" value="{{ form.get('email', '') }}" required>
+              </div>
+            </div>
+            <div class="form__row">
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" value="{{ form.get('phone', '') }}">
+              </div>
+              <div class="field">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject">
+                  {% for option in ['General enquiry', 'An existing order', 'Corporate flowers',
+                                    'Weddings and events', 'Funeral tributes', 'Something went wrong'] %}
+                    <option value="{{ option }}" {% if form.get('subject') == option %}selected{% endif %}>{{ option }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="message">Message *</label>
+              <textarea id="message" name="message" required>{{ form.get('message', '') }}</textarea>
+            </div>
+            <button class="btn" type="submit">Send message</button>
+          </form>
+        </div>
+      </div>
+
+      <div>
+        <h2>Studio details</h2>
+        <p>
+          <strong>Address</strong><br>
+          {{ brand.address }}
+        </p>
+        <p>
+          <strong>Phone</strong><br>
+          <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>
+        </p>
+        <p>
+          <strong>Email</strong><br>
+          <a href="mailto:{{ brand.email }}">{{ brand.email }}</a>
+        </p>
+        <p>
+          <strong>Opening hours</strong><br>
+          {{ brand.opening_hours }}
+        </p>
+
+        <hr>
+
+        <h3>Already ordered?</h3>
+        <p class="muted">
+          You can check where your order is without contacting us at all.
+        </p>
+        <a class="btn btn--outline" href="{{ url_for('checkout.track') }}">Track an order</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

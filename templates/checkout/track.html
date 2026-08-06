@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Track your order | {{ brand.name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <div class="container pagehead__inner">
+    <h1>Track your order</h1>
+    <p class="lead">
+      Enter the reference from your confirmation email along with the email
+      address you ordered with.
+    </p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container container--mid">
+
+    <form method="post" class="formcard" style="max-width:520px;margin-bottom:2.5rem">
+      <div class="form">
+        <div class="field">
+          <label for="reference">Order reference</label>
+          <input id="reference" name="reference" type="text" value="{{ reference }}"
+                 placeholder="NB-ABC123" required>
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" placeholder="you@example.ie" required>
+        </div>
+        <button class="btn" type="submit">Find my order</button>
+      </div>
+    </form>
+
+    {% if order %}
+      {% set step_order = ['confirmed', 'in_studio', 'out_for_delivery', 'delivered'] %}
+      {% if order.status != 'cancelled' %}
+        {% set current_index = step_order.index(order.status) if order.status in step_order else 0 %}
+        <div class="tracker">
+          {% for step in step_order %}
+            <div class="tracker__step
+                        {% if loop.index0 < current_index %}is-done
+                        {% elif loop.index0 == current_index %}is-current{% endif %}">
+              <span class="tracker__dot">{% if loop.index0 <= current_index %}✓{% endif %}</span>
+              {{ {'confirmed': 'Confirmed',
+                  'in_studio': 'In the studio',
+                  'out_for_delivery': 'Out for delivery',
+                  'delivered': 'Delivered'}[step] }}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="flash flash--danger">This order was cancelled. Ring us if that's unexpected.</p>
+      {% endif %}
+
+      {% include "partials/order_summary.html" %}
+    {% endif %}
+
+    <p class="muted small">
+      Can't find your reference? Email
+      <a href="mailto:{{ brand.email }}">{{ brand.email }}</a> or ring
+      <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>
+      and we'll look it up.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

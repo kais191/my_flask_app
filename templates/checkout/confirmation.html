@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.reference }} confirmed | {{ brand.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+
+<section class="container container--mid confirm">
+  <div class="confirm__mark">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+  </div>
+  <h1>Thank you, {{ order.customer_name.split(' ')[0] }}</h1>
+  <p class="lead center" style="margin-bottom:0">
+    Your order is confirmed and a receipt is on its way to
+    <strong>{{ order.customer_email }}</strong>.
+  </p>
+  <span class="confirm__ref">{{ order.reference }}</span>
+  <p class="muted">
+    Keep this reference — you can use it to
+    <a href="{{ url_for('checkout.track') }}">track your order</a> at any time.
+  </p>
+</section>
+
+<section class="section section--tight">
+  <div class="container container--mid">
+    {% include "partials/order_summary.html" %}
+
+    <div class="panel" style="background:var(--cream);border-color:transparent">
+      <h2 style="font-size:1.15rem">What happens next</h2>
+      <ol style="margin:0;color:var(--ink-soft);font-size:.92rem">
+        <li>We buy and condition the stems for your arrangement.</li>
+        <li>On {{ order.delivery_date.strftime('%A %-d %B') }}, your florist builds it by hand and writes your card.</li>
+        <li>Our driver delivers it and texts {{ order.recipient_phone or 'the recipient' }} on arrival.</li>
+        <li>If nobody is home we leave it somewhere safe and shaded, and send you a photo.</li>
+      </ol>
+      <p class="small muted" style="margin:1rem 0 0">
+        Need to change something? Ring us on
+        <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>
+        before 4pm the day before delivery.
+      </p>
+    </div>
+
+    <div class="center" style="margin-top:2rem">
+      <a class="btn" href="{{ url_for('shop.collections') }}">Continue shopping</a>
+      {% if not current_user %}
+        <a class="btn btn--ghost" href="{{ url_for('auth.register') }}">Create an account</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

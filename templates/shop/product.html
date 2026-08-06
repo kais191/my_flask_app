@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | {{ brand.name }}{% endblock %}
+{% block description %}{{ product.blurb }} Delivered fresh across Ireland — same-day in Dublin, Kildare and Wicklow.{% endblock %}
+
+{% block head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.name | tojson }},
+  "description": {{ product.blurb | tojson }},
+  "brand": {"@type": "Brand", "name": "Nested Blooms"},
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ '%.2f' % (product.price / 100) }}",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock"
+  }{% if product.rating %},
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ product.rating }}",
+    "reviewCount": "{{ product.review_count }}"
+  }{% endif %}
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <ol class="breadcrumbs">
+    <li><a href="{{ url_for('main.index') }}">Home</a></li>
+    <li><a href="{{ url_for('shop.collection', slug=product.collection.slug) }}">{{ product.collection.name }}</a></li>
+    <li>{{ product.name }}</li>
+  </ol>
+</div>
+
+<section class="section section--tight">
+  <div class="container product">
+
+    <div class="product__gallery">
+      <div class="product__image">
+        <img src="{{ url_for('static', filename=product.image) }}"
+             alt="{{ product.name }} — {{ product.blurb }}" width="800" height="1000" fetchpriority="high">
+      </div>
+      <div class="product__notes">
+        <div class="product__note">
+          <strong>Made fresh</strong>
+          <span>On the morning of delivery</span>
+        </div>
+        <div class="product__note">
+          <strong>7-day promise</strong>
+          <span>Replaced or refunded</span>
+        </div>
+        <div class="product__note">
+          <strong>Free card</strong>
+          <span>Handwritten by us</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="product__details">
+      <div class="product__header">
+        <p class="product__collection">{{ product.collection.name }}</p>
+        <h1>{{ product.name }}</h1>
+        {% if product.rating %}
+          <p>
+            <span class="stars" aria-label="Rated {{ product.rating }} out of 5">
+              {% for _ in range(product.rating | round(0, 'floor') | int) %}★{% endfor %}
+              <span class="stars__count">{{ product.rating }} · {{ product.review_count }} reviews</span>
+            </span>
+          </p>
+        {% endif %}
+        <p class="product__blurb">{{ product.blurb }}</p>
+        <div class="product__pricing">
+          <span class="product__price" data-price-out>{{ product.price | euro }}</span>
+          <span class="product__price-note">Delivery from {{ 595 | euro }} · free over {{ free_delivery_threshold | euro }}</span>
+        </div>
+      </div>
+
+      <form method="post" action="{{ url_for('cart.add') }}"
+            data-price-form data-base-price="{{ product.price }}">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+
+        <div class="optiongroup">
+          <div class="optiongroup__label">
+            <span>Choose a size</span>
+            <span class="optiongroup__hint">More stems, same style</span>
+          </div>
+          <div class="sizes">
+            {% for size in sizes %}
+              <label class="size">
+                <input type="radio" name="size" value="{{ size.code }}"
+                       data-delta="{{ size.delta }}" {% if loop.first %}checked{% endif %}>
+                <span class="size__box">
+                  <span class="size__name">{{ size.name }}</span>
+                  <span class="size__price">{{ (product.price + size.delta) | euro }}</span>
+                  <span class="size__blurb">{{ size.blurb }}</span>
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="optiongroup">
+          <div class="optiongroup__label">
+            <span>Make it extra special</span>
+            <span class="optiongroup__hint">Optional</span>
+          </div>
+          <div class="addons">
+            {% for addon in addons %}
+              <label class="addon">
+                <input type="checkbox" name="addons" value="{{ addon.code }}" data-price="{{ addon.price }}">
+                <span class="addon__text">
+                  <span class="addon__name">{{ addon.name }}</span>
+                  <span class="addon__blurb">{{ addon.blurb }}</span>
+                </span>
+                <span class="addon__price">+{{ addon.price | euro }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="buybar">
+          <div class="qty">
+            <button type="button" data-qty="down" aria-label="Decrease quantity">−</button>
+            <label class="sr-only" for="quantity">Quantity</label>
+            <input id="quantity" type="number" name="quantity" value="1" min="1" max="99">
+            <button type="button" data-qty="up" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn--lg" type="submit">Add to basket</button>
+        </div>
+        <button class="btn btn--lg btn--ghost btn--block" type="submit" name="buy_now" value="1">
+          Buy now &amp; choose a delivery date
+        </button>
+      </form>
+
+      <div class="trustline">
+        <span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Same-day in Dublin before 2pm
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Next-day nationwide
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Secure checkout
+        </span>
+      </div>
+
+      <div class="accordion" style="margin-top:2rem">
+        <div class="accordion__item">
+          <button class="accordion__trigger" type="button" aria-controls="panel-desc" aria-expanded="true">
+            About this arrangement
+          </button>
+          <div class="accordion__panel" id="panel-desc">
+            <p>{{ product.description }}</p>
+          </div>
+        </div>
+        <div class="accordion__item">
+          <button class="accordion__trigger" type="button" aria-controls="panel-contains" aria-expanded="true">
+            What's inside
+          </button>
+          <div class="accordion__panel" id="panel-contains">
+            <p>{{ product.contains }}</p>
+            <p class="small muted">
+              We buy at market each morning, so an individual variety may be
+              swapped for something better on the day. The size, palette and
+              style always match.
+            </p>
+          </div>
+        </div>
+        <div class="accordion__item">
+          <button class="accordion__trigger" type="button" aria-controls="panel-care" aria-expanded="true">
+            Care instructions
+          </button>
+          <div class="accordion__panel" id="panel-care">
+            <p>
+              Keep out of direct sunlight and away from radiators and fruit
+              bowls — ripening fruit gives off ethylene, which ages flowers
+              quickly. Top up the water daily and change it every three days,
+              recutting the stems at an angle each time.
+            </p>
+          </div>
+        </div>
+        <div class="accordion__item">
+          <button class="accordion__trigger" type="button" aria-controls="panel-delivery" aria-expanded="true">
+            Delivery &amp; guarantee
+          </button>
+          <div class="accordion__panel" id="panel-delivery">
+            <p>
+              Same-day delivery across Dublin, Kildare and Wicklow for orders
+              placed before 2pm. Next-day everywhere else in Ireland with a 4pm
+              cut-off. You can choose any date up to ninety days ahead.
+            </p>
+            <p>
+              Our seven-day freshness guarantee is unconditional: send us a
+              photograph and we will replace the flowers or refund you in full.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--cream" id="reviews">
+  <div class="container container--mid">
+    <h2>Reviews for {{ product.name }}</h2>
+
+    {% if product.rating %}
+      <div class="reviews__summary">
+        <div>
+          <div class="reviews__score">{{ product.rating }}</div>
+          <div class="stars">{% for _ in range(product.rating | round(0, 'floor') | int) %}★{% endfor %}</div>
+        </div>
+        <p class="muted" style="margin:0">
+          Based on {{ product.review_count }} verified review{{ '' if product.review_count == 1 else 's' }}
+          from customers who bought this arrangement.
+        </p>
+      </div>
+    {% endif %}
+
+    {% if reviews %}
+      <div>
+        {% for review in reviews %}
+          <article class="review">
+            <div class="review__head">
+              <div class="stars" aria-label="{{ review.rating }} out of 5">
+                {% for _ in range(review.rating) %}★{% endfor %}
+              </div>
+              <span class="review__meta">
+                {{ review.author }}{% if review.location %}, {{ review.location }}{% endif %}
+                · {{ review.created_at.strftime('%d %B %Y') }}
+              </span>
+            </div>
+            {% if review.title %}<h4>{{ review.title }}</h4>{% endif %}
+            <p>{{ review.body }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No reviews for this one yet — be the first.</p>
+    {% endif %}
+
+    <details style="margin-top:2rem">
+      <summary style="cursor:pointer;font-weight:600;color:var(--green-700)">Write a review</summary>
+      <form class="form" method="post" action="{{ url_for('shop.add_review', slug=product.slug) }}" style="margin-top:1.25rem;max-width:560px">
+        <div class="form__row">
+          <div class="field">
+            <label for="review-author">Your name</label>
+            <input id="review-author" type="text" name="author" required>
+          </div>
+          <div class="field">
+            <label for="review-location">Town or county</label>
+            <input id="review-location" type="text" name="location">
+          </div>
+        </div>
+        <div class="field">
+          <label for="review-rating">Rating</label>
+          <select id="review-rating" name="rating">
+            {% for value in [5, 4, 3, 2, 1] %}
+              <option value="{{ value }}">{{ value }} star{{ '' if value == 1 else 's' }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="review-title">Headline</label>
+          <input id="review-title" type="text" name="title">
+        </div>
+        <div class="field">
+          <label for="review-body">Your review</label>
+          <textarea id="review-body" name="body" required></textarea>
+        </div>
+        <button class="btn" type="submit">Post review</button>
+      </form>
+    </details>
+  </div>
+</section>
+
+{% if related %}
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">You might also like</p>
+        <h2>More from our studio</h2>
+      </div>
+    </div>
+    <div class="grid grid--4">
+      {% for product in related %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.reference }} | {{ brand.name }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+
+<section class="section section--tight">
+  <div class="container container--mid">
+    <ol class="breadcrumbs" style="padding-top:0">
+      <li><a href="{{ url_for('auth.account') }}">Your account</a></li>
+      <li>{{ order.reference }}</li>
+    </ol>
+
+    <h1 style="margin:1rem 0 1.5rem">Order {{ order.reference }}</h1>
+
+    {% set step_order = ['confirmed', 'in_studio', 'out_for_delivery', 'delivered'] %}
+    {% if order.status != 'cancelled' %}
+      {% set current_index = step_order.index(order.status) if order.status in step_order else 0 %}
+      <div class="tracker">
+        {% for step in step_order %}
+          <div class="tracker__step
+                      {% if loop.index0 < current_index %}is-done
+                      {% elif loop.index0 == current_index %}is-current{% endif %}">
+            <span class="tracker__dot">{% if loop.index0 <= current_index %}✓{% endif %}</span>
+            {{ {'confirmed': 'Confirmed',
+                'in_studio': 'In the studio',
+                'out_for_delivery': 'Out for delivery',
+                'delivered': 'Delivered'}[step] }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% include "partials/order_summary.html" %}
+
+    <p class="muted small">
+      Need to change this order? Ring
+      <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a>
+      before 4pm the day before delivery.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

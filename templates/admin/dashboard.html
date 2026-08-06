@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Studio dashboard | {{ brand.name }}{% endblock %}
+
+{% block admin %}
+<h1>Overview</h1>
+
+<div class="stats" style="margin-top:1.5rem">
+  <div class="stat">
+    <p class="stat__label">Orders</p>
+    <div class="stat__value">{{ order_count }}</div>
+    <p class="stat__note">{{ pending }} still to go out</p>
+  </div>
+  <div class="stat">
+    <p class="stat__label">Revenue</p>
+    <div class="stat__value">{{ revenue | euro }}</div>
+    <p class="stat__note">{{ revenue_week | euro }} in the last 7 days</p>
+  </div>
+  <div class="stat">
+    <p class="stat__label">Products live</p>
+    <div class="stat__value">{{ product_count }}</div>
+    <p class="stat__note">{{ subscriber_count }} newsletter subscribers</p>
+  </div>
+  <div class="stat">
+    <p class="stat__label">Messages</p>
+    <div class="stat__value">{{ unread_messages }}</div>
+    <p class="stat__note">awaiting a reply</p>
+  </div>
+</div>
+
+<h2>Delivering today</h2>
+{% if today_deliveries %}
+  <div class="table-wrap" style="margin-bottom:2.5rem">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Reference</th><th>Recipient</th><th>Address</th>
+          <th>Items</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in today_deliveries %}
+          <tr>
+            <td><a href="{{ url_for('admin.order_detail', reference=order.reference) }}">{{ order.reference }}</a></td>
+            <td>{{ order.recipient_name }}</td>
+            <td class="small">{{ order.city }}, {{ order.county }}</td>
+            <td class="num">{{ order.item_count }}</td>
+            <td><span class="status-pill status-pill--{{ order.status }}">{{ order.status_label }}</span></td>
+            <td>
+              <form method="post" action="{{ url_for('admin.update_status', reference=order.reference) }}">
+                <input type="hidden" name="next" value="{{ url_for('admin.dashboard') }}">
+                <select name="status" onchange="this.form.submit()">
+                  {% for status in ['confirmed', 'in_studio', 'out_for_delivery', 'delivered', 'cancelled'] %}
+                    <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>
+                      {{ status.replace('_', ' ') | title }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="muted" style="margin-bottom:2.5rem">Nothing scheduled for delivery today.</p>
+{% endif %}
+
+<div class="split" style="align-items:start;gap:2.5rem">
+  <div>
+    <h2>Recent orders</h2>
+    <div class="table-wrap">
+      <table class="data" style="min-width:0">
+        <thead>
+          <tr><th>Reference</th><th>Customer</th><th>Date</th><th class="num">Total</th></tr>
+        </thead>
+        <tbody>
+          {% for order in recent_orders %}
+            <tr>
+              <td><a href="{{ url_for('admin.order_detail', reference=order.reference) }}">{{ order.reference }}</a></td>
+              <td class="small">{{ order.customer_name }}</td>
+              <td class="small">{{ order.created_at.strftime('%d/%m/%y') }}</td>
+              <td class="num">{{ order.total | euro }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="4" class="muted">No orders yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div>
+    <h2>Best sellers</h2>
+    <div class="table-wrap">
+      <table class="data" style="min-width:0">
+        <thead>
+          <tr><th>Product</th><th class="num">Units</th><th class="num">Revenue</th></tr>
+        </thead>
+        <tbody>
+          {% for row in top_products %}
+            <tr>
+              <td class="small">
+                {% if row.product_slug %}
+                  <a href="{{ url_for('shop.product', slug=row.product_slug) }}">{{ row.product_name }}</a>
+                {% else %}{{ row.product_name }}{% endif %}
+              </td>
+              <td class="num">{{ row.units }}</td>
+              <td class="num">{{ row.revenue | euro }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3" class="muted">No sales yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

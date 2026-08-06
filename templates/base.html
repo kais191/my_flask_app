@@ -1,32 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Flask App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ brand.name }} — Flower Delivery Dublin &amp; Ireland{% endblock %}</title>
+  <meta name="description" content="{% block description %}Hand-tied flowers made fresh in Dublin and delivered across Ireland. Same-day delivery in Dublin, Kildare and Wicklow, next-day nationwide.{% endblock %}">
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
 </head>
-<body>
-    <nav>
-        <a href="{{ url_for('index') }}">Home</a>
-        {% if session.get('user') %}
-            <span>Welcome, {{ session['user'] }}!</span>
-            <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('register') }}">Register</a>
-        {% endif %}
+<body{% if body_class is defined %} class="{{ body_class }}"{% endif %}>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="announce">
+  <div class="container announce__inner">
+    <span class="announce__item">Same-day delivery in Dublin, Kildare &amp; Wicklow — order before 2pm</span>
+    <span class="announce__sep" aria-hidden="true">·</span>
+    <span class="announce__item">Free standard delivery over {{ free_delivery_threshold | euro }}</span>
+    <span class="announce__sep" aria-hidden="true">·</span>
+    <span class="announce__item">7-day freshness guarantee</span>
+  </div>
+</div>
+
+<header class="header" id="header">
+  <div class="container header__inner">
+    <button class="header__burger" type="button" aria-label="Open menu" aria-expanded="false" data-menu-toggle>
+      <span></span><span></span><span></span>
+    </button>
+
+    <a class="brand" href="{{ url_for('main.index') }}">
+      <img class="brand__mark" src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="44" height="44">
+      <span class="brand__text">
+        <span class="brand__name">Nested Blooms</span>
+        <span class="brand__tag">Dublin florist</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul class="nav__list">
+        <li class="nav__item nav__item--has-menu">
+          <a class="nav__link" href="{{ url_for('shop.collections') }}">Shop <span class="nav__caret" aria-hidden="true"></span></a>
+          <div class="megamenu">
+            <div class="megamenu__inner container">
+              <div class="megamenu__col">
+                <p class="megamenu__title">By collection</p>
+                <ul>
+                  {% for c in nav_collections %}
+                    <li><a href="{{ url_for('shop.collection', slug=c.slug) }}">{{ c.name }}</a></li>
+                  {% endfor %}
+                  <li><a class="megamenu__all" href="{{ url_for('shop.collections') }}">View the complete range →</a></li>
+                </ul>
+              </div>
+              <div class="megamenu__col">
+                <p class="megamenu__title">By occasion</p>
+                <ul>
+                  {% for o in nav_occasions[:8] %}
+                    <li><a href="{{ url_for('shop.occasion', slug=o.slug) }}">{{ o.name }}</a></li>
+                  {% endfor %}
+                  <li><a class="megamenu__all" href="{{ url_for('shop.occasions') }}">All occasions →</a></li>
+                </ul>
+              </div>
+              <div class="megamenu__feature">
+                <img src="{{ url_for('static', filename='img/collections/parisian-hatbox.svg') }}" alt="" loading="lazy">
+                <div>
+                  <p class="megamenu__title">Bestseller</p>
+                  <p class="megamenu__feature-name">The Parisian Hatbox</p>
+                  <p class="megamenu__feature-copy">Arranged in hydrated foam inside a keepsake box — no vase needed.</p>
+                  <a class="btn btn--sm" href="{{ url_for('shop.collection', slug='parisian-hatbox') }}">Shop hatboxes</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav__item"><a class="nav__link" href="{{ url_for('shop.occasion', slug='birthday') }}">Birthday</a></li>
+        <li class="nav__item"><a class="nav__link" href="{{ url_for('shop.collection', slug='luxury') }}">Luxury</a></li>
+        <li class="nav__item"><a class="nav__link" href="{{ url_for('shop.collection', slug='plants') }}">Plants</a></li>
+        <li class="nav__item"><a class="nav__link" href="{{ url_for('main.delivery') }}">Delivery</a></li>
+        <li class="nav__item"><a class="nav__link" href="{{ url_for('main.about') }}">Our studio</a></li>
+      </ul>
     </nav>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flashes">
-          {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+    <div class="header__actions">
+      <button class="iconbtn" type="button" aria-label="Search" data-search-toggle>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <a class="iconbtn iconbtn--hide-sm" href="{{ url_for('auth.account') }}" aria-label="Your account">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+      </a>
+      <a class="iconbtn iconbtn--cart" href="{{ url_for('cart.view') }}" aria-label="Basket ({{ cart_count }} items)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        {% if cart_count %}<span class="iconbtn__badge" data-cart-count>{{ cart_count }}</span>{% endif %}
+      </a>
+    </div>
+  </div>
 
-    {% block content %}{% endblock %}
+  <div class="searchbar" data-search-panel hidden>
+    <form class="container searchbar__form" action="{{ url_for('shop.search') }}" method="get" role="search">
+      <label class="sr-only" for="site-search">Search flowers</label>
+      <input id="site-search" type="search" name="q" placeholder="Search roses, peonies, hatboxes…" autocomplete="off">
+      <button class="btn" type="submit">Search</button>
+    </form>
+  </div>
+</header>
+
+<div class="drawer" data-menu-panel hidden>
+  <div class="drawer__head">
+    <span class="brand__name">Nested Blooms</span>
+    <button class="drawer__close" type="button" aria-label="Close menu" data-menu-toggle>&times;</button>
+  </div>
+  <nav class="drawer__nav" aria-label="Mobile">
+    <p class="drawer__title">Collections</p>
+    {% for c in nav_collections %}
+      <a href="{{ url_for('shop.collection', slug=c.slug) }}">{{ c.name }}</a>
+    {% endfor %}
+    <p class="drawer__title">Occasions</p>
+    {% for o in nav_occasions %}
+      <a href="{{ url_for('shop.occasion', slug=o.slug) }}">{{ o.name }}</a>
+    {% endfor %}
+    <p class="drawer__title">More</p>
+    <a href="{{ url_for('main.delivery') }}">Delivery information</a>
+    <a href="{{ url_for('main.about') }}">Our studio</a>
+    <a href="{{ url_for('main.reviews') }}">Reviews</a>
+    <a href="{{ url_for('main.contact') }}">Contact</a>
+    <a href="{{ url_for('checkout.track') }}">Track an order</a>
+    {% if current_user %}
+      <a href="{{ url_for('auth.account') }}">Your account</a>
+      <a href="{{ url_for('auth.logout') }}">Sign out</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">Sign in</a>
+    {% endif %}
+  </nav>
+</div>
+<div class="drawer__scrim" data-menu-toggle hidden></div>
+
+<main id="main">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container flashes" role="status">
+        {% for category, message in messages %}
+          <div class="flash flash--{{ category }}">
+            <span>{{ message }}</span>
+            <button class="flash__close" type="button" aria-label="Dismiss">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<section class="newsletter">
+  <div class="container newsletter__inner">
+    <div class="newsletter__copy">
+      <h2>Ten percent off, and no nonsense</h2>
+      <p>Join the list for seasonal news and first look at new arrangements. We email about twice a month, and you can leave any time.</p>
+    </div>
+    <form class="newsletter__form" action="{{ url_for('main.newsletter') }}" method="post">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <label class="sr-only" for="newsletter-email">Email address</label>
+      <input id="newsletter-email" type="email" name="email" placeholder="you@example.ie" required>
+      <button class="btn btn--dark" type="submit">Sign up</button>
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="52" height="52">
+      <p class="footer__tagline">{{ brand.tagline }}</p>
+      <p class="footer__contact">
+        <a href="tel:{{ brand.phone | replace(' ', '') }}">{{ brand.phone }}</a><br>
+        <a href="mailto:{{ brand.email }}">{{ brand.email }}</a>
+      </p>
+      <p class="footer__hours">{{ brand.opening_hours }}</p>
+    </div>
+
+    <div class="footer__col">
+      <h3>Shop</h3>
+      <ul>
+        {% for c in nav_collections %}
+          <li><a href="{{ url_for('shop.collection', slug=c.slug) }}">{{ c.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h3>Occasions</h3>
+      <ul>
+        {% for o in nav_occasions[:7] %}
+          <li><a href="{{ url_for('shop.occasion', slug=o.slug) }}">{{ o.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h3>Delivery areas</h3>
+      <ul>
+        {% for area in delivery_areas %}
+          <li><a href="{{ url_for('main.delivery_area', slug=area.slug) }}">{{ area.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h3>Help</h3>
+      <ul>
+        <li><a href="{{ url_for('main.delivery') }}">Delivery information</a></li>
+        <li><a href="{{ url_for('main.faq') }}">Frequently asked questions</a></li>
+        <li><a href="{{ url_for('checkout.track') }}">Track an order</a></li>
+        <li><a href="{{ url_for('main.contact') }}">Contact us</a></li>
+        <li><a href="{{ url_for('main.corporate') }}">Corporate flowers</a></li>
+        <li><a href="{{ url_for('main.weddings') }}">Weddings</a></li>
+        <li><a href="{{ url_for('main.returns') }}">Our guarantee</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__bar">
+    <p>&copy; {{ brand.name }} {{ now_year }}. Registered in Ireland. {{ brand.address }}</p>
+    <ul class="footer__legal">
+      <li><a href="{{ url_for('main.terms') }}">Terms</a></li>
+      <li><a href="{{ url_for('main.privacy') }}">Privacy</a></li>
+      <li><a href="{{ url_for('main.returns') }}">Returns</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
