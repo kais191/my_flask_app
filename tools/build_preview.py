@@ -57,18 +57,24 @@ def extract_body(html):
     return match.group(1) if match else html
 
 
-def rewrite(body):
-    """Inline images and repoint links at the snapshot's own sections."""
-    # Inline every /static/img/... reference.
+def rewrite(body, assets):
+    """Repoint images at the shared asset table and links at captured pages.
+
+    Images become ``data-img="k3"`` rather than carrying an inline data URI.
+    Each illustration is then stored once no matter how many pages use it, and
+    the viewer only decodes the artwork for the page actually on screen —
+    without that, a phone tries to decode every image across all eight pages
+    at once and the tab dies.
+    """
     def image_sub(match):
         quote, path = match.group(1), match.group(2)
         uri = data_uri(path)
-        return f"src={quote}{uri or ''}{quote}"
+        if uri is None:
+            return match.group(0)
+        key = assets.setdefault(uri, f"k{len(assets)}")
+        return f"data-img={quote}{key}{quote}"
 
     body = re.sub(r'src=(["\'])/static/(img/[^"\']+)\1', image_sub, body)
-
-    # The artwork is embedded in the file, so deferring it buys nothing and
-    # leaves blank frames when switching between captured pages.
     body = body.replace(' loading="lazy"', "")
 
     # Drop the stylesheet link and script tag; both are handled separately.
@@ -96,14 +102,20 @@ def main():
     with open(os.path.join(ROOT, "static", "css", "style.css"), encoding="utf-8") as f:
         css = f.read()
 
+    assets = {}
     sections = []
     for path, page_id, _label in PAGES:
         print(f"  capturing {path}")
-        body = rewrite(extract_body(fetch(base, path)))
+        body = rewrite(extract_body(fetch(base, path)), assets)
         sections.append(
             f'<section class="snap-page" id="{page_id}" '
             f'{"" if page_id == "home" else "hidden"}>{body}</section>'
         )
+
+    asset_table = ",".join(
+        f'{key}:"{uri}"' for uri, key in assets.items()
+    )
+    print(f"  {len(assets)} unique illustrations")
 
     switcher = "".join(
         '<button type="button" data-goto="{0}"{1}>{2}</button>'.format(
@@ -148,18 +160,34 @@ def main():
 {"".join(sections)}
 
 <script>
+var IMGS = {{{asset_table}}};
 (function () {{
   var pages = Array.prototype.slice.call(document.querySelectorAll('.snap-page'));
   var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-goto]'));
 
+  // Only the visible page holds decoded artwork. Phones cannot hold every
+  // illustration from all eight pages in memory at once.
+  function attach(page) {{
+    page.querySelectorAll('img[data-img]').forEach(function (img) {{
+      var uri = IMGS[img.dataset.img];
+      if (uri && img.getAttribute('src') !== uri) img.src = uri;
+    }});
+  }}
+
+  function release(page) {{
+    page.querySelectorAll('img[data-img]').forEach(function (img) {{
+      img.removeAttribute('src');
+    }});
+  }}
+
   function show(id) {{
-    var found = false;
+    var found = pages.some(function (p) {{ return p.id === id; }});
+    if (!found) id = pages[0].id;
     pages.forEach(function (p) {{
       var match = p.id === id;
-      p.hidden = !match;
-      if (match) found = true;
+      if (match) {{ attach(p); p.hidden = false; }}
+      else {{ p.hidden = true; release(p); }}
     }});
-    if (!found) {{ pages[0].hidden = false; id = pages[0].id; }}
     buttons.forEach(function (b) {{
       b.classList.toggle('is-active', b.dataset.goto === id);
     }});
